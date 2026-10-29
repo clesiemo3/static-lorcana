@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lore Watcher</title>
+  <meta name="description" content="Watch a teammate's LoreBot lore tracker live, read-only. Paste a room link or name; nothing here can change the score.">
+<style>
+  :root {
+    --bg: #faf8f4; --surface: #ffffff; --text: #1f1d1a; --muted: #6b665e;
+    --border: #e6e1d8; --accent: #6a3fa0; --accent-soft: #f1ebf8;
+    --ok: #298a34; --warn: #b45309; --bad: #d3082f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
+      --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236;
+      --ok: #4ade80; --warn: #fbbf24; --bad: #fb7185;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
+    --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236;
+    --ok: #4ade80; --warn: #fbbf24; --bad: #fb7185;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+  a { color: var(--accent); }
+  h1 { font-size: 1.7rem; line-height: 1.25; margin: 0.1em 0 0.2em; }
+  .back { font-size: 0.9rem; text-decoration: none; }
+  .muted { color: var(--muted); font-size: 0.9rem; }
+
+  form { display: flex; gap: 8px; margin: 16px 0 6px; }
+  input[type="text"] {
+    flex: 1; min-width: 0; font: inherit; padding: 9px 12px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+  }
+  input[type="text"]:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  button {
+    font: inherit; font-weight: 600; padding: 9px 16px; cursor: pointer;
+    background: var(--accent); color: var(--bg); border: 0; border-radius: 8px;
+  }
+  .recent { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
+  .recent button {
+    font-weight: 400; font-size: 0.8rem; padding: 2px 10px; max-width: 100%;
+    background: var(--accent-soft); color: var(--accent);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .status { display: flex; align-items: center; gap: 8px; margin: 22px 0 10px; font-size: 0.9rem; color: var(--muted); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); flex: none; }
+  .status[data-state="live"] .dot { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
+  .status[data-state="retry"] .dot { background: var(--warn); }
+  .status[data-state="error"] .dot { background: var(--bad); }
+  .room-name { color: var(--text); font-weight: 600; overflow-wrap: anywhere; }
+
+  .board { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .player {
+    position: relative; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px 18px; text-align: center;
+  }
+  .player::before { content: ""; position: absolute; inset: 0 0 auto; height: 6px; background: var(--pc); }
+  .player .name { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; margin-top: 4px; overflow-wrap: anywhere; }
+  .player .lore {
+    font-size: clamp(4rem, 18vw, 6.5rem); font-weight: 800; line-height: 1.05;
+    font-variant-numeric: tabular-nums; color: var(--pc);
+  }
+  .player .lore.unknown { color: var(--muted); opacity: 0.5; }
+  .player.winner { border-color: var(--pc); box-shadow: 0 0 0 2px var(--pc); }
+  .player .badge { font-size: 0.75rem; font-weight: 700; color: var(--pc); text-transform: uppercase; letter-spacing: 0.08em; min-height: 1.2em; }
+  .player.bump .lore { animation: bump 0.5s ease-out; }
+  @keyframes bump { from { transform: scale(1.18); } to { transform: scale(1); } }
+  @media (prefers-reduced-motion: reduce) { .player.bump .lore { animation: none; } }
+
+  .notice { background: var(--accent-soft); border-radius: 8px; padding: 10px 14px; font-size: 0.9rem; margin-top: 14px; }
+  .notice[hidden], .board:empty { display: none; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../">← All tools</a>
+  <h1>Lore Watcher</h1>
+  <p class="muted">Follow a <a href="https://lorebot.ink/lore_tracker">LoreBot</a> lore tracker without being able to change it. Paste the room link your teammate is using, or just the room name after <code>lore_tracker/</code>.</p>
+
+  <form id="room-form" autocomplete="off">
+    <input id="room-input" type="text" inputmode="url" spellcheck="false"
+           placeholder="https://lorebot.ink/lore_tracker/… or room name" aria-label="LoreBot room link or name">
+    <button type="submit">Watch</button>
+  </form>
+  <div class="recent" id="recent"></div>
+
+  <div class="status" id="status" data-state="idle" hidden>
+    <span class="dot"></span>
+    <span><span class="room-name" id="room-name"></span> · <span id="status-text"></span></span>
+  </div>
+  <div class="board" id="board" aria-live="polite"></div>
+  <div class="notice" id="no-lore" hidden>
+    LoreBot's public room API doesn't include lore totals yet, so only the players are shown.
+    The scores will appear here on their own as soon as LoreBot adds them.
+  </div>
+
+  <footer>Read-only: this page only reads LoreBot's public room data and has no way to send changes. Not affiliated with LoreBot.</footer>
+</main>
+
+<script>
+(() => {
+  const API = "https://lorebot.ink/api/lore_tracker/";
+  const POLL_MS = 3000, SLOW_POLL_MS = 15000, WIN_LORE = 20;
+  const RECENT_KEY = "lore-watcher:recent";
+
+  // Tailwind 600 shades, matching the color names LoreBot uses for players.
+  const COLORS = {
+    slate: "#475569", gray: "#4b5563", zinc: "#52525b", neutral: "#525252", stone: "#57534e",
+    red: "#dc2626", orange: "#ea580c", amber: "#d97706", yellow: "#ca8a04", lime: "#65a30d",
+    green: "#16a34a", emerald: "#059669", teal: "#0d9488", cyan: "#0891b2", sky: "#0284c7",
+    blue: "#2563eb", indigo: "#4f46e5", violet: "#7c3aed", purple: "#9333ea", fuchsia: "#c026d3",
+    pink: "#db2777", rose: "#e11d48",
+  };
+
+  const $ = (id) => document.getElementById(id);
+  const form = $("room-form"), input = $("room-input"), board = $("board");
+  const statusEl = $("status"), statusText = $("status-text"), roomNameEl = $("room-name");
+
+  let room = null, timer = null, controller = null, lastOk = 0, failures = 0;
+  const lastLore = new Map();
+
+  // Accepts a full lore tracker URL (including /admin or /browser_source
+  // variants) or the bare room name, and returns the room name.
+  function parseRoom(text) {
+    text = text.trim();
+    if (!text) return "";
+    const m = text.match(/lore_tracker\/([^/?#\s]+)/i);
+    let name = m ? m[1] : text.replace(/^\/+|\/+$/g, "");
+    try { name = decodeURIComponent(name); } catch (_) {}
+    return name;
+  }
+
+  function colorFor(c) {
+    if (!c) return "var(--accent)";
+    if (/^#[0-9a-f]{3,8}$/i.test(c)) return c;
+    return COLORS[String(c).toLowerCase()] || "var(--accent)";
+  }
+
+  function loreOf(p) {
+    for (const k of ["lore", "score", "lore_score"]) {
+      if (typeof p[k] === "number") return p[k];
+    }
+    return null;
+  }
+
+  function setStatus(state, text) {
+    statusEl.hidden = false;
+    statusEl.dataset.state = state;
+    statusText.textContent = text;
+  }
+
+  function render(data) {
+    const players = (data.players || []).slice(0, data.player_count || undefined);
+    let anyLore = false;
+    board.replaceChildren(...players.map((p) => {
+      const lore = loreOf(p);
+      if (lore !== null) anyLore = true;
+      const el = document.createElement("div");
+      el.className = "player";
+      el.style.setProperty("--pc", colorFor(p.color));
+      if (lore !== null && lore >= WIN_LORE) el.classList.add("winner");
+
+      const name = document.createElement("div");
+      name.className = "name";
+      name.textContent = p.name || p.id;
+      const num = document.createElement("div");
+      num.className = "lore" + (lore === null ? " unknown" : "");
+      num.textContent = lore === null ? "–" : lore;
+      const badge = document.createElement("div");
+      badge.className = "badge";
+      badge.textContent = el.classList.contains("winner") ? "20 lore reached" : "";
+      el.append(name, num, badge);
+
+      const key = p.id || p.name;
+      if (lore !== null && lastLore.has(key) && lastLore.get(key) !== lore) {
+        requestAnimationFrame(() => el.classList.add("bump"));
+      }
+      lastLore.set(key, lore);
+      return el;
+    }));
+    $("no-lore").hidden = anyLore || players.length === 0;
+  }
+
+  async function poll() {
+    clearTimeout(timer);
+    if (!room || document.hidden) return;
+    controller?.abort();
+    controller = new AbortController();
+    const current = room;
+    let next = POLL_MS;
+    try {
+      const res = await fetch(API + encodeURIComponent(current), { cache: "no-store", signal: controller.signal });
+      if (current !== room) return;
+      if (res.status === 404) {
+        board.replaceChildren();
+        $("no-lore").hidden = true;
+        setStatus("error", "LoreBot can't find this room. Check the link, and note that named rooms may not be shared publicly yet.");
+        next = SLOW_POLL_MS;
+      } else if (!res.ok) {
+        throw new Error("HTTP " + res.status);
+      } else {
+        render(await res.json());
+        failures = 0;
+        lastOk = Date.now();
+        setStatus("live", "Live");
+      }
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      failures++;
+      next = Math.min(SLOW_POLL_MS, POLL_MS * 2 ** failures);
+      setStatus(lastOk ? "retry" : "error", "Can't reach LoreBot, retrying…" + (lastOk ? " Last update " + ago(lastOk) + "." : ""));
+    }
+    timer = setTimeout(poll, next);
+  }
+
+  function ago(t) {
+    const s = Math.round((Date.now() - t) / 1000);
+    return s < 60 ? s + "s ago" : Math.round(s / 60) + "m ago";
+  }
+
+  function watch(name, { remember = true } = {}) {
+    room = name;
+    lastOk = 0; failures = 0; lastLore.clear();
+    board.replaceChildren();
+    $("no-lore").hidden = true;
+    input.value = name;
+    roomNameEl.textContent = name;
+    document.title = name ? `${name} · Lore Watcher` : "Lore Watcher";
+    const url = new URL(location.href);
+    if (name) url.searchParams.set("room", name); else url.searchParams.delete("room");
+    history.replaceState(null, "", url);
+    if (!name) { statusEl.hidden = true; return; }
+    setStatus("idle", "Connecting…");
+    if (remember) addRecent(name);
+    poll();
+  }
+
+  function loadRecent() {
+    try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (_) { return []; }
+  }
+  function addRecent(name) {
+    const list = [name, ...loadRecent().filter((r) => r !== name)].slice(0, 5);
+    try { localStorage.setItem(RECENT_KEY, JSON.stringify(list)); } catch (_) {}
+    drawRecent();
+  }
+  function drawRecent() {
+    $("recent").replaceChildren(...loadRecent().map((r) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = r;
+      b.title = "Watch " + r;
+      b.addEventListener("click", () => watch(r));
+      return b;
+    }));
+  }
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    watch(parseRoom(input.value));
+  });
+
+  // Stop polling in background tabs; catch up immediately on return.
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) poll(); });
+
+  drawRecent();
+  const initial = parseRoom(new URLSearchParams(location.search).get("room") || "");
+  if (initial) watch(initial, { remember: false });
+})();
+</script>
+</body>
+</html>
