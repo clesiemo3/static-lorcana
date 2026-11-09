@@ -276,7 +276,10 @@
   let code = "";
   try { code = localStorage.getItem(CODE_KEY) || ""; } catch (_) {}
   const codeApplied = () => !!DISCOUNT && code.trim().toUpperCase() === DISCOUNT.code.toUpperCase();
-  const discountAmt = () => codeApplied() ? Math.round(subtotal() * DISCOUNT.percent) / 100 : 0;
+  // Items with a set price (sold at cost) are left out of the discount.
+  const atCost = (item) => !!DISCOUNT && item.discountable === false;
+  const eligibleSubtotal = () => cartLines().filter((l) => !atCost(l.item)).reduce((s, l) => s + l.item.price * l.n, 0);
+  const discountAmt = () => codeApplied() ? Math.round(eligibleSubtotal() * DISCOUNT.percent) / 100 : 0;
   const cartTotal = () => Math.round((subtotal() - discountAmt()) * 100) / 100;
   const setCode = (c) => {
     code = c;
@@ -346,6 +349,7 @@
           i.set ? el("div", { className: "meta", textContent: i.set }) : null,
           i.note ? el("div", { className: "note", textContent: i.note }) : null,
           el("div", { className: "price-row" }, el("span", { className: "price", textContent: money(i.price) }), market),
+          atCost(i) ? el("div", { className: "meta", textContent: "Sold at cost, so discount codes don't apply." }) : null,
           buy));
     }));
     $("empty").hidden = shown.length > 0 || ITEMS.length === 0;
@@ -363,17 +367,20 @@
     $("code").disabled = applied;
     $("code-btn").textContent = applied ? "Remove" : "Apply";
     if (applied) {
-      $("code-msg").textContent = `${DISCOUNT.percent}% off for buying local.`;
+      const someAtCost = cartLines().some((l) => atCost(l.item));
+      $("code-msg").textContent = eligibleSubtotal() === 0
+        ? "Code saved. Items sold at cost aren't discounted, so add something else to use it."
+        : `${DISCOUNT.percent}% off for buying local.` + (someAtCost ? " Items sold at cost aren't discounted." : "");
       $("code-msg").className = "code-msg ok";
     }
-    $("subtotal-row").hidden = $("discount-row").hidden = !applied;
+    $("subtotal-row").hidden = $("discount-row").hidden = !discountAmt();
     $("subtotal").textContent = money(subtotal());
     $("discount-label").textContent = applied ? `${DISCOUNT.code} (${DISCOUNT.percent}% off)` : "";
     $("discount-amt").textContent = "−" + money(discountAmt());
     $("lines").replaceChildren(...cartLines().map(({ item, n }) =>
       el("li", {},
         item.image ? el("img", { src: item.image, alt: "" }) : el("span"),
-        el("div", { className: "ln-name" }, item.name, el("small", { textContent: [details(item), money(item.price) + " each"].filter(Boolean).join(" · ") })),
+        el("div", { className: "ln-name" }, item.name, el("small", { textContent: [details(item), money(item.price) + " each", atCost(item) ? "at cost" : ""].filter(Boolean).join(" · ") })),
         el("div", { className: "ln-right" }, el("span", { className: "ln-total", textContent: money(item.price * n) }), stepper(item.id)))));
     if (count === 0 && $("cart").open) $("cart").close();
   }
@@ -381,12 +388,13 @@
   function message() {
     const lines = cartLines().map(({ item, n }) => {
       const extra = details(item);
-      return `- ${n}x ${item.name}${extra ? ` (${extra})` : ""}: ${money(item.price * n)}`;
+      const noDiscount = codeApplied() && atCost(item) ? " (at cost, no discount)" : "";
+      return `- ${n}x ${item.name}${extra ? ` (${extra})` : ""}: ${money(item.price * n)}${noDiscount}`;
     });
     return [
       "Hi! I'd like to buy these from your Lorcana sale list:",
       ...lines,
-      ...(codeApplied() ? [
+      ...(discountAmt() ? [
         `Subtotal: ${money(subtotal())}`,
         `Discount code ${DISCOUNT.code} (${DISCOUNT.percent}% off): -${money(discountAmt())}`,
       ] : []),

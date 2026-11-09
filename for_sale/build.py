@@ -146,6 +146,9 @@ def build(out_dir: Path) -> Path:
             "condition": entry.get("condition", ""),
             "note": entry.get("note", ""),
             "printing": entry.get("printing", ""),
+            # Items with their own asking price are usually priced at cost, so
+            # the discount code skips them unless `discount = true` is set.
+            "discountable": entry.get("discount", "price" not in entry),
         }
         if "tcgplayer" in entry:
             pid = product_id(entry["tcgplayer"])

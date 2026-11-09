@@ -10,6 +10,11 @@
 #   qty = 1
 #   price = 250            # optional: your asking price. Without it the price
 #                          # is the market price, adjusted by [pricing] below.
+#                          # Items with a price set here don't get the
+#                          # [discount] code (e.g. things sold at cost).
+#   discount = true        # optional: overrides that, letting the discount code
+#                          # apply to a set price (or `false` to exclude an item
+#                          # priced from TCGplayer).
 #   printing = "Foil"      # optional: which TCGplayer price to use when a card
 #                          # has Normal and Foil prices. Default: Normal.
 #   condition = "Near Mint" # optional, shown on the listing
@@ -44,7 +49,8 @@ percent_of_market = 100
 round_to = 1
 
 [discount]
-# A code buyers can enter on their list for a percentage off the total.
+# A code buyers can enter on their list for a percentage off the total of
+# eligible items (not items with their own `price`; see above).
 # Anyone can see it in the page source, so treat it as a public deal.
 # Remove this section (or set code = "") to turn it off.
 code = "CAPNJIMMY10"
