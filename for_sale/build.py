@@ -125,7 +125,7 @@ def venmo_qr(handle: str) -> str:
 def build(out_dir: Path) -> Path:
     """Write the page into out_dir and return its path."""
     inv = tomllib.loads(INVENTORY.read_text())
-    seller, pricing = inv.get("seller", {}), inv.get("pricing", {})
+    seller, pricing, discount = inv.get("seller", {}), inv.get("pricing", {}), inv.get("discount", {})
     entries = [i for i in inv.get("item", []) if i.get("qty", 1) > 0]
 
     tcg_ids = {product_id(i["tcgplayer"]) for i in entries if "tcgplayer" in i}
@@ -195,6 +195,7 @@ def build(out_dir: Path) -> Path:
 
     data = {
         "seller": {k: seller.get(k, "") for k in ("discord", "discord_user_id", "venmo", "location")},
+        "discount": discount if discount.get("code") and discount.get("percent") else None,
         "items": items,
         "pricesAsOf": fetch("last-updated.txt").strip() if tcg_ids else "",
         "builtAt": datetime.now(timezone.utc).isoformat(timespec="minutes"),

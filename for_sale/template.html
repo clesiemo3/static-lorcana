@@ -127,7 +127,19 @@
   .lines .ln-name small { display: block; color: var(--muted); }
   .lines .ln-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
   .lines .ln-total { font-weight: 600; font-variant-numeric: tabular-nums; }
-  .total { display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 700; padding: 12px 0 4px; }
+  .code { display: flex; gap: 8px; margin-top: 12px; }
+  .code input {
+    flex: 1; min-width: 0; font: inherit; font-size: 0.95rem; padding: 7px 10px; text-transform: uppercase;
+    background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .code input::placeholder { text-transform: none; }
+  .code input:disabled { color: var(--ok); font-weight: 600; }
+  .code-msg { font-size: 0.85rem; margin: 4px 0 0; min-height: 1.3em; color: var(--muted); }
+  .code-msg.ok { color: var(--ok); }
+  .sumrow { display: flex; justify-content: space-between; font-size: 0.95rem; padding-top: 6px; font-variant-numeric: tabular-nums; }
+  .sumrow[hidden] { display: none; }
+  .sumrow.discount { color: var(--ok); }
+  .total { display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 700; padding: 8px 0 4px; }
   .steps { margin: 12px 0 0; padding-left: 1.3em; font-size: 0.92rem; }
   .steps li { margin: 4px 0; }
   .actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
@@ -181,6 +193,13 @@
   </div>
   <div class="dlg-body">
     <ul class="lines" id="lines"></ul>
+    <form class="code" id="code-form" autocomplete="off" hidden>
+      <input type="text" id="code" placeholder="Discount code" aria-label="Discount code" autocapitalize="characters" spellcheck="false">
+      <button class="secondary" type="submit" id="code-btn">Apply</button>
+    </form>
+    <p class="code-msg" id="code-msg" role="status"></p>
+    <div class="sumrow" id="subtotal-row" hidden><span>Subtotal</span><span id="subtotal"></span></div>
+    <div class="sumrow discount" id="discount-row" hidden><span id="discount-label"></span><span id="discount-amt"></span></div>
     <div class="total"><span>Total</span><span id="total"></span></div>
     <ol class="steps" id="steps"></ol>
     <div class="actions">
@@ -249,7 +268,21 @@
   const cartLines = () => Object.entries(cart)
     .map(([id, n]) => ({ item: BY_ID.get(id), n }))
     .filter((l) => l.item && l.n > 0);
-  const cartTotal = () => cartLines().reduce((s, l) => s + l.item.price * l.n, 0);
+  const subtotal = () => cartLines().reduce((s, l) => s + l.item.price * l.n, 0);
+
+  // ---- Discount code (one public code, set in inventory.toml) ----
+  const DISCOUNT = DATA.discount;
+  const CODE_KEY = "for-sale:code";
+  let code = "";
+  try { code = localStorage.getItem(CODE_KEY) || ""; } catch (_) {}
+  const codeApplied = () => !!DISCOUNT && code.trim().toUpperCase() === DISCOUNT.code.toUpperCase();
+  const discountAmt = () => codeApplied() ? Math.round(subtotal() * DISCOUNT.percent) / 100 : 0;
+  const cartTotal = () => Math.round((subtotal() - discountAmt()) * 100) / 100;
+  const setCode = (c) => {
+    code = c;
+    try { if (c) localStorage.setItem(CODE_KEY, c); else localStorage.removeItem(CODE_KEY); } catch (_) {}
+    renderCart();
+  };
   const cartCount = () => cartLines().reduce((s, l) => s + l.n, 0);
 
   function stepper(id) {
@@ -324,6 +357,19 @@
     $("cartbar").hidden = count === 0;
     $("cartsum").replaceChildren(money(cartTotal()), el("small", { textContent: count + (count === 1 ? " item" : " items") + " in your list" }));
     $("total").textContent = money(cartTotal());
+    const applied = codeApplied();
+    $("code-form").hidden = !DISCOUNT;
+    $("code").value = applied ? DISCOUNT.code : $("code").value;
+    $("code").disabled = applied;
+    $("code-btn").textContent = applied ? "Remove" : "Apply";
+    if (applied) {
+      $("code-msg").textContent = `${DISCOUNT.percent}% off for buying local.`;
+      $("code-msg").className = "code-msg ok";
+    }
+    $("subtotal-row").hidden = $("discount-row").hidden = !applied;
+    $("subtotal").textContent = money(subtotal());
+    $("discount-label").textContent = applied ? `${DISCOUNT.code} (${DISCOUNT.percent}% off)` : "";
+    $("discount-amt").textContent = "−" + money(discountAmt());
     $("lines").replaceChildren(...cartLines().map(({ item, n }) =>
       el("li", {},
         item.image ? el("img", { src: item.image, alt: "" }) : el("span"),
@@ -340,6 +386,10 @@
     return [
       "Hi! I'd like to buy these from your Lorcana sale list:",
       ...lines,
+      ...(codeApplied() ? [
+        `Subtotal: ${money(subtotal())}`,
+        `Discount code ${DISCOUNT.code} (${DISCOUNT.percent}% off): -${money(discountAmt())}`,
+      ] : []),
       `Total: ${money(cartTotal())}`,
       location.href.split(/[?#]/)[0],
     ].join("\n");
@@ -396,6 +446,23 @@
   $("sort").addEventListener("change", renderGrid);
   $("open-cart").addEventListener("click", () => { $("copied").textContent = ""; $("cart").showModal(); });
   $("copy").addEventListener("click", copyMessage);
+  $("code-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (codeApplied()) {
+      $("code").value = "";
+      $("code-msg").textContent = "";
+      setCode("");
+      return;
+    }
+    const entered = $("code").value.trim();
+    if (!entered) return;
+    if (entered.toUpperCase() === DISCOUNT.code.toUpperCase()) {
+      setCode(entered);
+    } else {
+      $("code-msg").textContent = "That code isn't valid.";
+      $("code-msg").className = "code-msg";
+    }
+  });
   $("clear").addEventListener("click", () => { cart = {}; saveCart(); renderGrid(); renderCart(); });
   for (const d of document.querySelectorAll("dialog")) {
     d.querySelector("[data-close]").addEventListener("click", () => d.close());
