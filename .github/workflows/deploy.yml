@@ -1,11 +1,15 @@
 name: Deploy site
 
-# Copies each page in tools/ into _site/, builds the index from the pages'
-# titles and descriptions, and publishes _site/ to GitHub Pages.
+# Copies each page in tools/ into _site/, generates data-driven tools (the For
+# Sale page), builds the index from the pages' titles and descriptions, and
+# publishes _site/ to GitHub Pages. The daily run refreshes For Sale prices;
+# tcgcsv.com updates around 20:00 UTC.
 
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "30 21 * * *"
   workflow_dispatch:
 
 permissions:

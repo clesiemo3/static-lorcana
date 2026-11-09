@@ -1,0 +1,70 @@
+# What I'm selling. Edit this file, then run `python3 scripts/build.py`
+# (or just push: the site rebuilds on every push and refreshes prices daily).
+#
+# Each [[item]] is one product. The usual case is a TCGplayer link plus a
+# quantity; the name, image, set and market price are filled in automatically
+# from TCGplayer's daily price data (via tcgcsv.com).
+#
+#   [[item]]
+#   tcgplayer = "https://www.tcgplayer.com/product/655976/..."  # or just 655976
+#   qty = 1
+#   price = 250            # optional: your asking price. Without it the price
+#                          # is the market price, adjusted by [pricing] below.
+#   printing = "Foil"      # optional: which TCGplayer price to use when a card
+#                          # has Normal and Foil prices. Default: Normal.
+#   condition = "Near Mint" # optional, shown on the listing
+#   note = "Still sealed"  # optional, shown on the listing
+#   kind = "Sealed"        # optional: overrides the automatic Card / Sealed /
+#                          # Playmat / Accessory category
+#
+# Items that aren't on TCGplayer need a name and a price instead:
+#
+#   [[item]]
+#   name = "Custom deck box"
+#   price = 15
+#   qty = 1
+#   image = "images/deck-box.jpg"   # optional: file in for_sale/ or a URL
+#   kind = "Accessory"
+#
+# Set qty = 0 (or delete the item) once something sells.
+
+[seller]
+discord = "clesiemo3"
+# Optional: your numeric Discord user ID (Settings → Advanced → Developer Mode,
+# then right-click your name → Copy User ID). Adds a "Message on Discord" button.
+discord_user_id = ""
+venmo = "clesiemo3"
+# Optional: shown under the title, e.g. "Meetups around St. Louis".
+location = ""
+
+[pricing]
+# Asking price for items without a `price`: TCGplayer market price × percent,
+# rounded to the nearest `round_to` dollars.
+percent_of_market = 100
+round_to = 1
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/655976/playmats-ravensburger-playmats-disney-lorcana-simba-pride-protector-foil-playmat-disney-lorcana-challenge?Language=English"
+qty = 1
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/655975/Playmats-Ravensburger%20Playmats-Disney%20Lorcana%20Mulan%20Charging%20Ahead%20Foil%20Playmat%20Disney%20Lorcana%20Challenge?xid=a894a51fb-31f6-487b-a617-171bad0dbef7&Language=English"
+qty = 1
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/645299/lorcana-tcg-fabled-disney-lorcana-fabled-illumineers-trove?page=1&Language=English"
+qty = 1
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/655963/lorcana-tcg-disney-lorcana-promo-cards-simba-pride-protector?Language=English&page=1"
+qty = 1
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/655962/lorcana-tcg-disney-lorcana-promo-cards-elsa-ice-maker?Language=English&page=1&Condition=Near+Mint"
+qty = 1
+condition = "Near Mint"
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/712026/lorcana-tcg-disney-lorcana-promo-cards-the-headless-horseman-cursed-rider?Condition=Near+Mint&Language=English&page=1"
+qty = 1
+condition = "Near Mint"

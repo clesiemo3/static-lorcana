@@ -7,6 +7,9 @@ into tools/ and nothing else. Standard library only, so CI needs no installs.
 Pages in draft_tools/ are kept out of the deployed site. Pass --drafts to
 include them in a local build for previewing; CI never does.
 
+Some tools are generated from data instead (see GENERATORS): each has a
+build(out_dir) function that writes its page and returns the path.
+
     python3 scripts/build.py [--drafts]
 """
 
@@ -17,6 +20,11 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from for_sale import build as for_sale  # noqa: E402
+
+GENERATORS = [for_sale]
 TOOLS = ROOT / "tools"
 DRAFTS = ROOT / "draft_tools"
 OUT = ROOT / "_site"
@@ -41,11 +49,14 @@ def main() -> None:
     sources = [(p, False) for p in sorted(TOOLS.glob("*.html"))]
     if "--drafts" in sys.argv[1:]:
         sources += [(p, True) for p in sorted(DRAFTS.glob("*.html"))]
+    for path, _ in sources:
+        shutil.copy2(path, OUT / "tools" / path.name)
+    # Generated tools build their page from data, straight into _site/tools/.
+    sources += [(gen.build(OUT / "tools"), False) for gen in GENERATORS]
 
     entries = []
-    for path, draft in sources:
+    for path, draft in sorted(sources, key=lambda s: s[0].name):
         page = path.read_text(encoding="utf-8")
-        shutil.copy2(path, OUT / "tools" / path.name)
         entries.append({
             "href": f"tools/{path.name}",
             "title": title(page) or path.stem,

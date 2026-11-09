@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>For Sale</title>
+  <meta name="description" content="Lorcana cards, sealed product and playmats I'm selling locally. Build a list, copy it, and message me on Discord to meet up and pay with cash or Venmo.">
+<style>
+  :root {
+    --bg: #faf8f4; --surface: #ffffff; --text: #1f1d1a; --muted: #6b665e;
+    --border: #e6e1d8; --accent: #6a3fa0; --accent-soft: #f1ebf8; --on-accent: #ffffff;
+    --ok: #298a34; --venmo: #008cff;
+    --shadow: 0 8px 28px rgba(0, 0, 0, 0.16);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
+      --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236; --on-accent: #15131a;
+      --ok: #4ade80; --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
+    --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236; --on-accent: #15131a;
+    --ok: #4ade80; --shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 120px; }
+  a { color: var(--accent); }
+  h1 { font-size: 1.8rem; line-height: 1.2; margin: 0.15em 0 0.3em; }
+  .back { font-size: 0.9rem; text-decoration: none; }
+  .kicker { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 10px; }
+  .muted { color: var(--muted); font-size: 0.9rem; }
+  .intro { max-width: 640px; margin: 0; }
+  button { font: inherit; cursor: pointer; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 20px 0 14px; }
+  .controls input[type="search"], .controls select {
+    font: inherit; font-size: 0.95rem; padding: 7px 10px; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .controls input[type="search"] { flex: 1 1 200px; min-width: 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-size: 0.85rem; padding: 4px 12px; border-radius: 999px;
+    background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  }
+  .chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  @media (max-width: 520px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .item .body { padding: 8px 10px 10px; }
+    .item h3 { font-size: 0.9rem; }
+    .price { font-size: 1.1rem; }
+    .stock { display: none; }
+  }
+  .item {
+    display: flex; flex-direction: column; overflow: hidden;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  }
+  .item .thumb {
+    display: block; width: 100%; aspect-ratio: 1; padding: 10px; border: 0;
+    background: color-mix(in srgb, var(--border) 35%, var(--surface)); cursor: zoom-in;
+  }
+  .item .thumb img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .item .thumb.noimg { cursor: default; display: grid; place-items: center; color: var(--muted); font-size: 0.85rem; }
+  .item .body { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px 12px; flex: 1; }
+  .item h3 { font-size: 0.98rem; line-height: 1.3; margin: 0; }
+  .item .meta { color: var(--muted); font-size: 0.8rem; }
+  .tag { display: inline-block; font-size: 0.72rem; font-weight: 600; background: var(--accent-soft); color: var(--accent); border-radius: 4px; padding: 0 6px; margin-right: 4px; }
+  .item .note { font-size: 0.85rem; }
+  .price-row { display: flex; align-items: baseline; gap: 8px; margin-top: auto; padding-top: 6px; flex-wrap: wrap; }
+  .price { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .market { font-size: 0.78rem; color: var(--muted); }
+  .market a { color: inherit; }
+  .buy { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .add {
+    flex: 1; font-weight: 600; padding: 7px 10px; border-radius: 8px; border: 0;
+    background: var(--accent); color: var(--on-accent);
+  }
+  .add:disabled { background: var(--accent-soft); color: var(--muted); cursor: default; }
+  .stock { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+  .empty { text-align: center; padding: 40px 0; }
+
+  .stepper { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .stepper button { width: 32px; height: 32px; border: 0; background: var(--surface); color: var(--text); font-size: 1.1rem; }
+  .stepper button:disabled { color: var(--muted); opacity: 0.5; cursor: default; }
+  .stepper span { min-width: 28px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  .cartbar {
+    position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 5;
+    width: min(520px, calc(100% - 32px));
+    display: flex; align-items: center; gap: 12px; padding: 10px 10px 10px 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow);
+  }
+  .cartbar[hidden] { display: none; }
+  .cartbar .sum { flex: 1; font-weight: 600; }
+  .cartbar .sum small { display: block; font-weight: 400; color: var(--muted); font-size: 0.8rem; }
+  .primary {
+    font-weight: 600; padding: 9px 16px; border-radius: 10px; border: 0;
+    background: var(--accent); color: var(--on-accent);
+  }
+  .secondary {
+    font-weight: 600; padding: 8px 14px; border-radius: 10px;
+    background: transparent; color: var(--accent); border: 1px solid var(--border);
+  }
+
+  dialog {
+    border: 1px solid var(--border); border-radius: 14px; padding: 0; box-shadow: var(--shadow);
+    background: var(--surface); color: var(--text);
+    width: min(560px, calc(100% - 24px)); max-height: calc(100dvh - 24px);
+  }
+  dialog::backdrop { background: rgba(0, 0, 0, 0.5); }
+  .dlg-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 6px; }
+  .dlg-head h2 { font-size: 1.15rem; margin: 0; }
+  .close { border: 0; background: transparent; color: var(--muted); font-size: 1.5rem; line-height: 1; padding: 4px 8px; }
+  .dlg-body { padding: 0 16px 16px; }
+  .lines { list-style: none; margin: 0; padding: 0; }
+  .lines li { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .lines img { width: 44px; height: 44px; object-fit: contain; }
+  .lines .ln-name { font-size: 0.92rem; line-height: 1.3; }
+  .lines .ln-name small { display: block; color: var(--muted); }
+  .lines .ln-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .lines .ln-total { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .total { display: flex; justify-content: space-between; font-size: 1.15rem; font-weight: 700; padding: 12px 0 4px; }
+  .steps { margin: 12px 0 0; padding-left: 1.3em; font-size: 0.92rem; }
+  .steps li { margin: 4px 0; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 4px; }
+  .actions .primary { flex: 1 1 200px; }
+  .copied { color: var(--ok); font-size: 0.85rem; min-height: 1.3em; margin: 0; }
+  .pay { display: flex; gap: 16px; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .qr { flex: none; width: 128px; padding: 8px; background: #ffffff; border-radius: 10px; border: 1px solid var(--border); }
+  .qr svg { display: block; width: 100%; height: auto; }
+  .venmo-handle { font-weight: 700; color: var(--venmo); }
+  .linkish { border: 0; background: none; color: var(--muted); text-decoration: underline; padding: 0; font-size: 0.85rem; }
+
+  #zoom { width: min(720px, calc(100% - 24px)); }
+  #zoom img { display: block; width: 100%; height: auto; max-height: calc(100dvh - 120px); object-fit: contain; }
+  #zoom .dlg-body { padding-top: 4px; }
+
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.82rem; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../">← All tools</a>
+  <div class="kicker">Local pickup · cash or Venmo</div>
+  <h1>Lorcana for sale</h1>
+  <p class="intro muted" id="intro"></p>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="Search" aria-label="Search items">
+    <div class="chips" id="kinds" role="group" aria-label="Filter by type"></div>
+    <select id="sort" aria-label="Sort">
+      <option value="price-desc">Price: high to low</option>
+      <option value="price-asc">Price: low to high</option>
+      <option value="name">Name</option>
+    </select>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <p class="empty muted" id="empty" hidden>Nothing matches that search.</p>
+
+  <footer id="footer"></footer>
+</main>
+
+<div class="cartbar" id="cartbar" hidden>
+  <div class="sum" id="cartsum"></div>
+  <button class="primary" id="open-cart" type="button">View list</button>
+</div>
+
+<dialog id="cart" aria-labelledby="cart-title">
+  <div class="dlg-head">
+    <h2 id="cart-title">Your list</h2>
+    <button class="close" type="button" data-close aria-label="Close">×</button>
+  </div>
+  <div class="dlg-body">
+    <ul class="lines" id="lines"></ul>
+    <div class="total"><span>Total</span><span id="total"></span></div>
+    <ol class="steps" id="steps"></ol>
+    <div class="actions">
+      <button class="primary" id="copy" type="button">Copy message</button>
+      <a class="secondary" id="discord-link" target="_blank" rel="noopener" hidden>Open Discord</a>
+    </div>
+    <p class="copied" id="copied" role="status"></p>
+    <div class="pay" id="pay" hidden>
+      <div class="qr" id="qr"><!--VENMO_QR--></div>
+      <div>
+        <div class="muted">Venmo</div>
+        <a class="venmo-handle" id="venmo-link" target="_blank" rel="noopener"></a>
+        <p class="muted" style="margin: 6px 0 0;">Scan with your phone camera or the Venmo app when we meet. Only pay once you have the items.</p>
+      </div>
+    </div>
+    <p style="margin: 14px 0 0;"><button class="linkish" id="clear" type="button">Clear list</button></p>
+  </div>
+</dialog>
+
+<dialog id="zoom" aria-label="Item image">
+  <div class="dlg-head">
+    <strong id="zoom-title"></strong>
+    <button class="close" type="button" data-close aria-label="Close">×</button>
+  </div>
+  <div class="dlg-body"><img id="zoom-img" alt=""></div>
+</dialog>
+
+<script id="inventory" type="application/json">__INVENTORY_JSON__</script>
+<script>
+(() => {
+  const DATA = JSON.parse(document.getElementById("inventory").textContent);
+  const ITEMS = DATA.items;
+  const BY_ID = new Map(ITEMS.map((i) => [i.id, i]));
+  const SELLER = DATA.seller;
+  const CART_KEY = "for-sale:cart";
+
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, props = {}, ...kids) => {
+    const n = Object.assign(document.createElement(tag), props);
+    n.append(...kids.filter((k) => k !== null && k !== undefined && k !== ""));
+    return n;
+  };
+  const money = (n) => new Intl.NumberFormat("en-US", {
+    style: "currency", currency: "USD", minimumFractionDigits: Number.isInteger(n) ? 0 : 2,
+  }).format(n);
+  const details = (i) => [i.printing, i.condition].filter(Boolean).join(", ");
+
+  // ---- Cart: { itemId: qty }, kept in this browser only ----
+  let cart = {};
+  try { cart = JSON.parse(localStorage.getItem(CART_KEY)) || {}; } catch (_) {}
+  // Drop items that sold or were removed, and cap at what's still available.
+  for (const [id, n] of Object.entries(cart)) {
+    const item = BY_ID.get(id);
+    if (!item || !(n > 0)) delete cart[id];
+    else cart[id] = Math.min(n, item.qty);
+  }
+  const saveCart = () => { try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); } catch (_) {} };
+  const setQty = (id, n) => {
+    const item = BY_ID.get(id);
+    n = Math.max(0, Math.min(n, item.qty));
+    if (n) cart[id] = n; else delete cart[id];
+    saveCart();
+    renderGrid();
+    renderCart();
+  };
+  const cartLines = () => Object.entries(cart)
+    .map(([id, n]) => ({ item: BY_ID.get(id), n }))
+    .filter((l) => l.item && l.n > 0);
+  const cartTotal = () => cartLines().reduce((s, l) => s + l.item.price * l.n, 0);
+  const cartCount = () => cartLines().reduce((s, l) => s + l.n, 0);
+
+  function stepper(id) {
+    const n = cart[id] || 0, item = BY_ID.get(id);
+    const minus = el("button", { type: "button", textContent: "−", ariaLabel: "One fewer " + item.name });
+    const plus = el("button", { type: "button", textContent: "+", ariaLabel: "One more " + item.name, disabled: n >= item.qty });
+    minus.addEventListener("click", () => setQty(id, n - 1));
+    plus.addEventListener("click", () => setQty(id, n + 1));
+    return el("div", { className: "stepper" }, minus, el("span", { textContent: n }), plus);
+  }
+
+  // ---- Grid ----
+  const kinds = [...new Set(ITEMS.map((i) => i.kind))].sort();
+  let kindFilter = "All";
+  $("kinds").replaceChildren(...(kinds.length > 1 ? ["All", ...kinds] : []).map((k) => {
+    const b = el("button", { type: "button", className: "chip", textContent: k });
+    b.setAttribute("aria-pressed", k === kindFilter);
+    b.addEventListener("click", () => {
+      kindFilter = k;
+      for (const c of $("kinds").children) c.setAttribute("aria-pressed", c === b);
+      renderGrid();
+    });
+    return b;
+  }));
+
+  function renderGrid() {
+    const q = $("q").value.trim().toLowerCase();
+    const sort = $("sort").value;
+    const shown = ITEMS
+      .filter((i) => kindFilter === "All" || i.kind === kindFilter)
+      .filter((i) => !q || [i.name, i.set, i.kind, i.note, i.condition].join(" ").toLowerCase().includes(q))
+      .sort((a, b) => sort === "name" ? a.name.localeCompare(b.name)
+        : sort === "price-asc" ? a.price - b.price : b.price - a.price);
+
+    $("grid").replaceChildren(...shown.map((i) => {
+      const thumb = i.image
+        ? el("button", { type: "button", className: "thumb", ariaLabel: "Enlarge image of " + i.name },
+            el("img", { src: i.image, alt: "", loading: "lazy", decoding: "async" }))
+        : el("div", { className: "thumb noimg", textContent: "No image" });
+      if (i.image) thumb.addEventListener("click", () => zoom(i));
+
+      const market = i.market != null
+        ? el("span", { className: "market" }, "TCGplayer ",
+            i.url ? el("a", { href: i.url, target: "_blank", rel: "noopener", textContent: money(i.market) }) : money(i.market))
+        : null;
+
+      const inCart = cart[i.id] || 0;
+      let buy;
+      if (inCart) {
+        buy = el("div", { className: "buy" }, stepper(i.id), el("span", { className: "stock", textContent: "in list" }));
+      } else {
+        const add = el("button", { type: "button", className: "add", textContent: "Add to list" });
+        add.addEventListener("click", () => setQty(i.id, 1));
+        buy = el("div", { className: "buy" }, add, el("span", { className: "stock", textContent: i.qty > 1 ? i.qty + " available" : "" }));
+      }
+
+      return el("article", { className: "item" }, thumb,
+        el("div", { className: "body" },
+          el("div", {}, el("span", { className: "tag", textContent: i.kind }), details(i) ? el("span", { className: "meta", textContent: details(i) }) : null),
+          el("h3", { textContent: i.name }),
+          i.set ? el("div", { className: "meta", textContent: i.set }) : null,
+          i.note ? el("div", { className: "note", textContent: i.note }) : null,
+          el("div", { className: "price-row" }, el("span", { className: "price", textContent: money(i.price) }), market),
+          buy));
+    }));
+    $("empty").hidden = shown.length > 0 || ITEMS.length === 0;
+  }
+
+  // ---- Cart bar and dialog ----
+  function renderCart() {
+    const count = cartCount();
+    $("cartbar").hidden = count === 0;
+    $("cartsum").replaceChildren(money(cartTotal()), el("small", { textContent: count + (count === 1 ? " item" : " items") + " in your list" }));
+    $("total").textContent = money(cartTotal());
+    $("lines").replaceChildren(...cartLines().map(({ item, n }) =>
+      el("li", {},
+        item.image ? el("img", { src: item.image, alt: "" }) : el("span"),
+        el("div", { className: "ln-name" }, item.name, el("small", { textContent: [details(item), money(item.price) + " each"].filter(Boolean).join(" · ") })),
+        el("div", { className: "ln-right" }, el("span", { className: "ln-total", textContent: money(item.price * n) }), stepper(item.id)))));
+    if (count === 0 && $("cart").open) $("cart").close();
+  }
+
+  function message() {
+    const lines = cartLines().map(({ item, n }) => {
+      const extra = details(item);
+      return `- ${n}x ${item.name}${extra ? ` (${extra})` : ""}: ${money(item.price * n)}`;
+    });
+    return [
+      "Hi! I'd like to buy these from your Lorcana sale list:",
+      ...lines,
+      `Total: ${money(cartTotal())}`,
+      location.href.split(/[?#]/)[0],
+    ].join("\n");
+  }
+
+  async function copyMessage() {
+    const text = message();
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (_) {
+      const ta = el("textarea", { value: text });
+      ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.append(ta); ta.select();
+      document.execCommand("copy"); ta.remove();
+    }
+    $("copied").textContent = SELLER.discord
+      ? `Copied. Paste it in a Discord message to @${SELLER.discord}.`
+      : "Copied.";
+  }
+
+  function zoom(i) {
+    $("zoom-title").textContent = i.name;
+    $("zoom-img").src = i.imageLarge || i.image;
+    $("zoom-img").alt = i.name;
+    $("zoom").showModal();
+  }
+
+  // ---- Static text from the seller settings ----
+  const handle = SELLER.discord ? `@${SELLER.discord}` : "me";
+  $("intro").textContent = [
+    SELLER.location,
+    `Add what you'd like to your list, copy it, and send it to ${handle} on Discord. We'll meet up and you can pay in person with cash or Venmo.`,
+  ].filter(Boolean).join(" · ");
+  $("steps").replaceChildren(
+    el("li", { textContent: "Copy your list as a message." }),
+    el("li", { textContent: `Send it to ${handle} on Discord and we'll pick a time and place.` }),
+    el("li", { textContent: "Pay in person with cash or Venmo." }));
+  if (SELLER.discord_user_id) {
+    Object.assign($("discord-link"), { href: `https://discord.com/users/${SELLER.discord_user_id}`, hidden: false });
+  }
+  if (SELLER.venmo) {
+    Object.assign($("venmo-link"), { href: `https://venmo.com/u/${encodeURIComponent(SELLER.venmo)}`, textContent: "@" + SELLER.venmo });
+    $("pay").hidden = false;
+    if (!$("qr").querySelector("svg")) $("qr").hidden = true;
+  }
+  const asOf = DATA.pricesAsOf ? new Date(DATA.pricesAsOf).toLocaleDateString(undefined, { dateStyle: "medium" }) : "";
+  $("footer").textContent = [
+    "Nothing is sold or paid for on this page; your list stays in this browser until you send it.",
+    asOf ? `TCGplayer market prices via tcgcsv.com, updated ${asOf}. Prices may change before we meet.` : "",
+  ].filter(Boolean).join(" ");
+
+  // ---- Events ----
+  $("q").addEventListener("input", renderGrid);
+  $("sort").addEventListener("change", renderGrid);
+  $("open-cart").addEventListener("click", () => { $("copied").textContent = ""; $("cart").showModal(); });
+  $("copy").addEventListener("click", copyMessage);
+  $("clear").addEventListener("click", () => { cart = {}; saveCart(); renderGrid(); renderCart(); });
+  for (const d of document.querySelectorAll("dialog")) {
+    d.querySelector("[data-close]").addEventListener("click", () => d.close());
+    d.addEventListener("click", (e) => { if (e.target === d) d.close(); });
+  }
+  // Another tab changed the list.
+  window.addEventListener("storage", (e) => {
+    if (e.key !== CART_KEY) return;
+    try { cart = JSON.parse(e.newValue) || {}; } catch (_) { cart = {}; }
+    renderGrid(); renderCart();
+  });
+
+  renderGrid();
+  renderCart();
+})();
+</script>
+</body>
+</html>

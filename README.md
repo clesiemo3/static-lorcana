@@ -19,8 +19,11 @@ but never deployed. To publish one, move it into `tools/`.
 
 ## Building locally
 
+The build fetches TCGplayer prices over HTTPS. If your Python is a python.org
+install on macOS that hasn't run its "Install Certificates" step, use `uv run`:
+
 ```bash
-python3 scripts/build.py
+uv run python3 scripts/build.py
 ```
 
 To include drafts in a local build (marked "Draft" on the index):
@@ -41,6 +44,22 @@ Create the repository on GitHub, then in **Settings → Pages** set **Source** t
 ## Tools
 
 Published tools are in `tools/`; drafts are in `draft_tools/`.
+
+- **For Sale** (`for_sale/`, generated): the cards, sealed product and
+  playmats I'm selling locally. Visitors add items to a list (saved in their
+  browser), copy it as a message, and send it to me on Discord; payment is in
+  person with cash or Venmo, with a QR code for my Venmo profile.
+  - Edit `for_sale/inventory.toml`: usually just a TCGplayer link and a
+    quantity per item. Set `qty = 0` when something sells. The file's comments
+    cover asking prices, printings, conditions and non-TCGplayer items.
+  - The build fills in names, images, sets and market prices from
+    [tcgcsv.com](https://tcgcsv.com), a free daily mirror of TCGplayer's
+    data. Images are loaded from TCGplayer's CDN. `tcgplayer_lookup.json`
+    caches which TCGplayer set each product is in; commit it.
+  - The deploy workflow runs daily as well as on push, so prices stay current.
+  - `venmo-qr.svg` is generated from the Venmo handle and committed. After
+    changing the handle, regenerate it with
+    `uv run --with segno python3 scripts/build.py`.
 
 - **Lore Watcher** (`draft_tools/lore-watcher.html`, draft until LoreBot's
   maintainer OKs it): a read-only view of a
