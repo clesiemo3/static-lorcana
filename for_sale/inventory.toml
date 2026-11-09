@@ -32,7 +32,7 @@
 discord = "clesiemo3"
 # Optional: your numeric Discord user ID (Settings → Advanced → Developer Mode,
 # then right-click your name → Copy User ID). Adds a "Message on Discord" button.
-discord_user_id = ""
+discord_user_id = "211610514319605761"
 venmo = "clesiemo3"
 # Optional: shown under the title, e.g. "Meetups around St. Louis".
 location = ""
@@ -52,11 +52,11 @@ percent = 10
 
 [[item]]
 tcgplayer = "https://www.tcgplayer.com/product/655976/playmats-ravensburger-playmats-disney-lorcana-simba-pride-protector-foil-playmat-disney-lorcana-challenge?Language=English"
-qty = 1
+qty = 3
 
 [[item]]
-tcgplayer = "https://www.tcgplayer.com/product/655975/Playmats-Ravensburger%20Playmats-Disney%20Lorcana%20Mulan%20Charging%20Ahead%20Foil%20Playmat%20Disney%20Lorcana%20Challenge?xid=a894a51fb-31f6-487b-a617-171bad0dbef7&Language=English"
-qty = 1
+tcgplayer = "https://www.tcgplayer.com/product/655975/Playmats-Ravensburger%20Playmats-Disney%20Lorcana%20Mulan%20Charging%20Ahead%20Foil%20Playmat%20Disney%20Lorcana%20Challenge?Language=English"
+qty = 3
 
 [[item]]
 tcgplayer = "https://www.tcgplayer.com/product/645299/lorcana-tcg-fabled-disney-lorcana-fabled-illumineers-trove?page=1&Language=English"
@@ -64,14 +64,50 @@ qty = 1
 
 [[item]]
 tcgplayer = "https://www.tcgplayer.com/product/655963/lorcana-tcg-disney-lorcana-promo-cards-simba-pride-protector?Language=English&page=1"
-qty = 1
+qty = 3
 
 [[item]]
 tcgplayer = "https://www.tcgplayer.com/product/655962/lorcana-tcg-disney-lorcana-promo-cards-elsa-ice-maker?Language=English&page=1&Condition=Near+Mint"
-qty = 1
+qty = 2
 condition = "Near Mint"
 
 [[item]]
 tcgplayer = "https://www.tcgplayer.com/product/712026/lorcana-tcg-disney-lorcana-promo-cards-the-headless-horseman-cursed-rider?Condition=Near+Mint&Language=English&page=1"
+qty = 2
+condition = "Near Mint"
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/712027/lorcana-tcg-disney-lorcana-promo-cards-tinker-bell-insistent-fairy?Condition=Near+Mint&Language=English&page=1"
+qty = 2
+condition = "Near Mint"
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/711435/playmats-ravensburger-playmats-disney-lorcana-winnie-the-pooh-hunny-wizard-premium-foil-playmat?page=1&Language=English"
+qty = 4
+condition = "Near Mint"
+price = 55
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/692217/Lorcana%20TCG-Wilds%20Unknown-Jessie%20Lively%20Cowgirl%20Enchanted?Language=English"
 qty = 1
+condition = "Near Mint"
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/658884/Lorcana%20TCG-Whispers%20in%20the%20Well-The%20Black%20Cauldron%20Enchanted?Language=English"
+qty = 1
+condition = "Near Mint"
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/657887/lorcana-tcg-whispers-in-the-well-demona-scourge-of-the-wyvern-clan?Language=English&page=1"
+qty = 4
+condition = "Near Mint"
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/658329/lorcana-tcg-whispers-in-the-well-hades-looking-for-a-deal?Language=English&page=1"
+qty = 2
+condition = "Near Mint"
+
+[[item]]
+tcgplayer = "https://www.tcgplayer.com/product/649228/lorcana-tcg-fabled-max-goof-chart-topper?Language=English&page=1"
+qty = 2
 condition = "Near Mint"

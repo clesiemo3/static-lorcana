@@ -3,6 +3,10 @@
     "categoryId": 71,
     "groupId": 24348
   },
+  "649228": {
+    "categoryId": 71,
+    "groupId": 24348
+  },
   "655962": {
     "categoryId": 71,
     "groupId": 23234
@@ -19,7 +23,31 @@
     "categoryId": 35,
     "groupId": 23280
   },
+  "657887": {
+    "categoryId": 71,
+    "groupId": 24414
+  },
+  "658329": {
+    "categoryId": 71,
+    "groupId": 24414
+  },
+  "658884": {
+    "categoryId": 71,
+    "groupId": 24414
+  },
+  "692217": {
+    "categoryId": 71,
+    "groupId": 24617
+  },
+  "711435": {
+    "categoryId": 35,
+    "groupId": 23280
+  },
   "712026": {
+    "categoryId": 71,
+    "groupId": 23234
+  },
+  "712027": {
     "categoryId": 71,
     "groupId": 23234
   }
