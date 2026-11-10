@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YALCA</title>
+  <meta name="description" content="Parody: a launch page for Yet Another Lorcana Collection App, the revolutionary all-in-one app that does exactly what the other dozens do. Definitely not a cash grab.">
+<style>
+  /* TODO: clean up this css lol */
+  :root {
+    --bg: #fdf6ff; --surface: #ffffff; --text: #1d1530; --muted: #6c5f86;
+    --border: #e7d9f7; --pink: #ff2fa0; --purple: #7b2ff7; --cyan: #00c2ff;
+    --lime: #9dff00; --warn-bg: #fff3b0; --warn-text: #5c4600; --err-bg: #ffe3e3; --err-text: #9b1c1c;
+    --glow: 0 0 24px rgba(255, 47, 160, 0.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #120b1f; --surface: #1d1430; --text: #f3ecff; --muted: #b3a5cf;
+      --border: #3a2a5c; --warn-bg: #4a3b00; --warn-text: #ffe27a; --err-bg: #4a1414; --err-text: #ffb4b4;
+      --glow: 0 0 28px rgba(255, 47, 160, 0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #120b1f; --surface: #1d1430; --text: #f3ecff; --muted: #b3a5cf;
+    --border: #3a2a5c; --warn-bg: #4a3b00; --warn-text: #ffe27a; --err-bg: #4a1414; --err-text: #ffb4b4;
+    --glow: 0 0 28px rgba(255, 47, 160, 0.5);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow-x: hidden;
+  }
+  main { max-width: 980px; margin: 0 auto; padding: 0 16px 64px; }
+  a { color: var(--purple); }
+  .back { display: inline-block; margin: 14px 0 0; font-size: 0.9rem; text-decoration: none; }
+  .comic { font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", cursive; }
+  .grad {
+    background: linear-gradient(90deg, var(--pink), var(--purple), var(--cyan), var(--pink));
+    background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: slide 6s linear infinite;
+  }
+  @keyframes slide { to { background-position: 300% 0; } }
+
+  .promo {
+    position: sticky; top: 0; z-index: 10; overflow: hidden; white-space: nowrap;
+    background: linear-gradient(90deg, var(--pink), var(--purple)); color: #fff; font-weight: 700; font-size: 0.9rem;
+    padding: 7px 0;
+  }
+  .promo span { display: inline-block; padding-left: 100%; animation: ticker 22s linear infinite; }
+  @keyframes ticker { to { transform: translateX(-100%); } }
+
+  .ai-leftover {
+    margin: 18px 0 0; padding: 10px 14px; border-radius: 8px; font-size: 0.9rem;
+    background: var(--surface); border: 1px dashed var(--border); color: var(--muted); font-family: ui-monospace, Menlo, monospace;
+  }
+
+  .hero { text-align: center; padding: 34px 0 10px; }
+  .version { display: inline-block; font: 600 0.75rem ui-monospace, Menlo, monospace; background: var(--lime); color: #1d1530; border-radius: 999px; padding: 2px 10px; transform: rotate(-2deg); }
+  .hero h1 { font-size: clamp(2.6rem, 9vw, 5.2rem); line-height: 1; margin: 14px 0 6px; letter-spacing: -0.02em; }
+  .hero .expansion { font-size: clamp(1rem, 3.4vw, 1.35rem); font-weight: 700; margin: 0 0 14px; }
+  .hero .tagline { font-size: clamp(1.05rem, 3vw, 1.3rem); max-width: 720px; margin: 0 auto; }
+  .hero .tagline em { color: var(--pink); font-style: normal; font-weight: 800; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 24px 0 8px; }
+  .btn {
+    font: inherit; font-weight: 800; cursor: pointer; border: 0; border-radius: 14px; padding: 14px 22px;
+    background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; box-shadow: var(--glow);
+    transition: transform 0.15s;
+  }
+  .btn:hover { transform: scale(1.06) rotate(-1deg); }
+  .btn.alt { background: var(--surface); color: var(--text); border: 2px solid var(--purple); box-shadow: none; }
+  .btn.small { padding: 8px 14px; font-size: 0.9rem; }
+  .fine { font-size: 0.75rem; color: var(--muted); }
+
+  .countdown { margin: 18px auto 0; font: 700 1.1rem ui-monospace, Menlo, monospace; }
+  .countdown b { color: var(--pink); }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 34px 0; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px; text-align: center; }
+  .stat b { display: block; font-size: 1.7rem; line-height: 1.1; }
+  .stat small { color: var(--muted); }
+
+  h2 { font-size: clamp(1.6rem, 5vw, 2.3rem); text-align: center; margin: 54px 0 6px; }
+  .sub { text-align: center; color: var(--muted); margin: 0 auto 22px; max-width: 640px; }
+
+  .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+  .feature { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; position: relative; }
+  .feature .icon { font-size: 2rem; }
+  .feature h3 { margin: 6px 0 6px; font-size: 1.15rem; }
+  .feature p { margin: 0 0 8px; }
+  .feature .status { font: 600 0.75rem ui-monospace, Menlo, monospace; border-radius: 6px; padding: 2px 8px; display: inline-block; }
+  .status.soon { background: var(--warn-bg); color: var(--warn-text); }
+  .status.broken { background: var(--err-bg); color: var(--err-text); }
+  .status.ok { background: color-mix(in srgb, var(--lime) 35%, transparent); }
+  .tilt { transform: rotate(1.5deg); }
+
+  .error {
+    margin: 22px 0; padding: 12px 14px; border-radius: 10px; overflow-x: auto;
+    background: var(--err-bg); color: var(--err-text); font: 0.85rem/1.5 ui-monospace, Menlo, monospace; white-space: pre;
+  }
+
+  .scanner { display: grid; grid-template-columns: minmax(0, 220px) 1fr; gap: 18px; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; }
+  .viewfinder {
+    aspect-ratio: 5 / 7; border-radius: 12px; position: relative; overflow: hidden;
+    background: repeating-linear-gradient(45deg, color-mix(in srgb, var(--purple) 18%, transparent) 0 12px, transparent 12px 24px);
+    border: 3px dashed var(--pink); display: grid; place-items: center; text-align: center; padding: 10px; font-weight: 700;
+  }
+  .viewfinder::after {
+    content: ""; position: absolute; left: 0; right: 0; height: 3px; background: var(--lime); top: 0;
+    box-shadow: 0 0 12px var(--lime); animation: scan 1.6s ease-in-out infinite alternate;
+  }
+  @keyframes scan { to { top: calc(100% - 3px); } }
+  .bar { height: 14px; border-radius: 999px; background: var(--border); overflow: hidden; margin: 10px 0 6px; }
+  .bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--pink)); transition: width 0.25s; }
+  .scan-result { min-height: 3em; font-weight: 600; }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.92rem; min-width: 620px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: center; }
+  th:first-child, td:first-child { text-align: left; }
+  th.us { color: var(--pink); }
+  td.us { font-weight: 800; background: color-mix(in srgb, var(--pink) 8%, transparent); }
+
+  .pricing { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+  .tier { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .tier.best { border: 3px solid var(--pink); box-shadow: var(--glow); }
+  .tier .badge { align-self: flex-start; font-size: 0.72rem; font-weight: 800; background: var(--pink); color: #fff; border-radius: 6px; padding: 1px 8px; }
+  .tier h3 { margin: 0; }
+  .tier .price { font-size: 2rem; font-weight: 800; line-height: 1; }
+  .tier .price small { font-size: 0.85rem; font-weight: 500; color: var(--muted); }
+  .tier ul { margin: 0; padding-left: 1.2em; font-size: 0.92rem; flex: 1; }
+  .tier li { margin: 3px 0; }
+
+  .quotes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+  blockquote { margin: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  blockquote p { margin: 0 0 8px; }
+  blockquote footer { color: var(--muted); font-size: 0.85rem; }
+  .stars { color: #f5b700; letter-spacing: 2px; }
+
+  .roadmap { list-style: none; padding: 0; margin: 0 auto; max-width: 640px; }
+  .roadmap li { display: grid; grid-template-columns: 74px 1fr; gap: 12px; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+  .roadmap b { color: var(--purple); }
+
+  details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 16px; margin: 10px auto; max-width: 720px; }
+  summary { font-weight: 700; cursor: pointer; }
+  details p { margin: 8px 0 0; }
+
+  .final { text-align: center; padding: 30px 16px; margin-top: 50px; border-radius: 20px; background: linear-gradient(135deg, color-mix(in srgb, var(--pink) 18%, var(--surface)), color-mix(in srgb, var(--cyan) 18%, var(--surface))); }
+  .site-foot { margin-top: 40px; font-size: 0.85rem; color: var(--muted); text-align: center; }
+  .parody { margin: 16px auto 0; max-width: 680px; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); text-align: left; }
+
+  .toast {
+    position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%) translateY(140%); z-index: 20;
+    width: min(440px, calc(100% - 32px)); padding: 12px 16px; border-radius: 14px;
+    background: var(--text); color: var(--bg); font-weight: 600; box-shadow: var(--glow); transition: transform 0.25s;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 560px) {
+    .scanner { grid-template-columns: 1fr; }
+    .viewfinder { max-width: 200px; margin: 0 auto; width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .grad, .promo span, .viewfinder::after { animation: none; }
+    .promo { white-space: normal; text-align: center; padding: 7px 12px; }
+    .promo span { padding-left: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="promo" aria-label="Promotion"><span>🔥🔥 EARLY BIRD PRICING ENDS IN <span id="promo-clock">23:59:59</span> (resets every day) 🔥🔥 &nbsp; USE CODE YALCA100 FOR 100% OFF THE FREE TIER &nbsp; 🚀 NOW WITH AI 🚀 &nbsp; 🔥🔥 EARLY BIRD PRICING ENDS SOON 🔥🔥</span></div>
+<main>
+  <a class="back" href="../">← All tools</a>
+
+  <p class="ai-leftover">Sure! Here's a stunning, modern, high-converting landing page for your Lorcana app 🚀✨ Let me know if you'd like any changes!</p>
+
+  <section class="hero">
+    <span class="version">v0.0.1-alpha-final-FINAL(2)</span>
+    <h1 class="grad comic">YALCA</h1>
+    <p class="expansion">Yet Another Lorcana Collection App™®©</p>
+    <p class="tagline">The <em>FIRST</em> and <em>ONLY</em> app that combines a collection tracker, decklists, TCGplayer prices, a card scanner, and a marketplace into one revolutionary experience. <span class="fine">(Not counting the other 40-ish apps that do this.)</span></p>
+    <div class="cta-row">
+      <button class="btn" type="button" data-toast="Download failed: app not found. (We haven't made it yet. Pre-order below!)">⬇️ Download for iPhone</button>
+      <button class="btn" type="button" data-toast="Android version coming after we figure out what Gradle is.">🤖 Download for Android</button>
+      <button class="btn alt" type="button" data-toast="You're on the waitlist! (There's no list. We just believe in you.)">✨ Join the Waitlist</button>
+    </div>
+    <div class="fine">No credit card required. Several credit cards recommended.</div>
+    <div class="countdown" aria-live="polite">🚀 Launching in <b id="launch">00:00:10</b></div>
+  </section>
+
+  <section class="stats" aria-label="Stats">
+    <div class="stat"><b class="grad">10M+</b><small>users*</small></div>
+    <div class="stat"><b class="grad">∞</b><small>cards supported</small></div>
+    <div class="stat"><b class="grad">99.9%</b><small>uptime (on my laptop)</small></div>
+    <div class="stat"><b class="grad">4,000+</b><small>AI prompts used to build it</small></div>
+  </section>
+  <p class="fine" style="text-align:center;margin-top:-20px;">*projected, if every Lorcana player downloads it twice</p>
+
+  <h2 class="comic">Features 🔥</h2>
+  <p class="sub">Five apps in one. Like a Swiss Army knife, but every blade is a different app you already have.</p>
+  <div class="features">
+    <article class="feature">
+      <div class="icon">📦</div>
+      <h3>Collection Tracker</h3>
+      <p>Track every card you own with blockchain-grade spreadsheet technology. Supports all six inks, plus two we made up (Plaid and Beige).</p>
+      <span class="status ok">✅ works (mostly)</span>
+    </article>
+    <article class="feature tilt">
+      <div class="icon">🃏</div>
+      <h3>Deck Builder</h3>
+      <p>Our AI builds a competitive 60-card deck for you in seconds. Average deck contains 14 copies of your favorite card. Legality not included.</p>
+      <span class="status broken">⚠️ hallucinating</span>
+    </article>
+    <article class="feature">
+      <div class="icon">💸</div>
+      <h3>Live TCGplayer Prices</h3>
+      <p>Real-time prices, updated every time I remember to screenshot the website and type them in. Last updated: {{last_updated}}.</p>
+      <span class="status soon">🕐 manual for now</span>
+    </article>
+    <article class="feature">
+      <div class="icon">📸</div>
+      <h3>Card Scanner</h3>
+      <p>Point your phone at any card and our neural network identifies it with up to 12% accuracy. Enchanted cards are detected by how shiny your screen gets.</p>
+      <span class="status soon">🧪 try the demo below</span>
+    </article>
+    <article class="feature">
+      <div class="icon">🤝</div>
+      <h3>Marketplace</h3>
+      <p>Buy, sell and trade with total confidence. Our escrow system: you mail me the card, and I mail you good vibes.</p>
+      <span class="status broken">🚫 legal said no</span>
+    </article>
+    <article class="feature">
+      <div class="icon">🤖</div>
+      <h3>{{feature_6_title}}</h3>
+      <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Synergy-driven lore optimization for the modern illumineer.</p>
+      <span class="status soon">TODO</span>
+    </article>
+  </div>
+
+  <h2 class="comic">Features 🔥</h2>
+  <p class="sub">(Pretty sure this section was supposed to be something else.)</p>
+
+  <div class="error" role="note">Uncaught TypeError: Cannot read properties of undefined (reading 'scanner')
+    at HeroSection (App.jsx:4127)
+    at renderWithHooks (react-dom.development.js:16305)
+    at FeaturesSectionCopy2 (FeaturesSectionCopy2.jsx:1)
+⚠️ If you see this, please refresh. If you still see this, it's a feature.</div>
+
+  <h2 class="comic">Try the Scanner 📸</h2>
+  <p class="sub">Experience our proprietary card recognition, running live in your browser.</p>
+  <div class="scanner">
+    <div class="viewfinder" aria-hidden="true">Hold card here<br>(not too close)<br>(not too far)</div>
+    <div>
+      <button class="btn small" type="button" id="scan">📸 Scan Card</button>
+      <div class="bar" role="progressbar" aria-label="Scan progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="scan-bar"></i></div>
+      <div class="scan-result" id="scan-result" aria-live="polite">Ready to scan. No camera access needed (or used).</div>
+      <p class="fine">Scanner results are for entertainment purposes. Please do not price your collection with them.</p>
+    </div>
+  </div>
+
+  <h2 class="comic">YALCA vs. Everyone Else</h2>
+  <p class="sub">We did the research (we looked at the App Store for about ten minutes).</p>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Feature</th><th class="us">YALCA</th><th>App A</th><th>App B</th><th>App C</th><th>The other 37</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Collection tracker</td><td class="us">✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Decklists</td><td class="us">✅</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>TCGplayer prices</td><td class="us">✅*</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Card scanner</td><td class="us">✅**</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td></tr>
+        <tr><td>Marketplace</td><td class="us">✅***</td><td>❌</td><td>✅</td><td>✅</td><td>✅</td></tr>
+        <tr><td>Called YALCA</td><td class="us">✅</td><td>❌</td><td>❌</td><td>❌</td><td>❌</td></tr>
+        <tr><td>Exists</td><td class="us">🤔</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="fine">*screenshots &nbsp; **12% of the time &nbsp; ***pending legal review &nbsp; The verdict is clear.</p>
+
+  <h2 class="comic">Pricing 💎</h2>
+  <p class="sub">Choose the plan that's right for my runway.</p>
+  <div class="pricing">
+    <div class="tier">
+      <h3>Free</h3>
+      <div class="price">$0<small> / forever*</small></div>
+      <ul>
+        <li>Track up to 3 cards</li>
+        <li>A full-screen ad every 4 seconds</li>
+        <li>Scanner works on Tuesdays</li>
+      </ul>
+      <button class="btn alt small" type="button" data-toast="Free tier is temporarily paid. *Forever ends on launch day.">Get Started</button>
+    </div>
+    <div class="tier best">
+      <span class="badge">MOST POPULAR (only option we tested)</span>
+      <h3>Illumineer Pro</h3>
+      <div class="price">$9.99<small> / month</small></div>
+      <ul>
+        <li>Unlimited cards (up to 50)</li>
+        <li>Ads, but smaller</li>
+        <li>Dark mode (it's the free light mode with your brightness down)</li>
+        <li>Priority support via my personal DMs</li>
+      </ul>
+      <button class="btn small" type="button" data-toast="Checkout isn't hooked up yet. Your wallet has been spared.">Go Pro 🚀</button>
+    </div>
+    <div class="tier">
+      <h3>Enchanted Ultra</h3>
+      <div class="price">$49.99<small> / week</small></div>
+      <ul>
+        <li>Everything in Pro</li>
+        <li>An NFT of your collection</li>
+        <li>Your name in the credits (we don't have credits)</li>
+        <li>Early access to the pre-order of Premium</li>
+      </ul>
+      <button class="btn alt small" type="button" data-toast="Ultra is sold out. We had one slot and I took it.">Go Ultra 💎</button>
+    </div>
+    <div class="tier">
+      <h3>Founder's Lifetime</h3>
+      <div class="price">$999<small> once</small></div>
+      <ul>
+        <li>Lifetime access for the lifetime of the app (est. 3 months)</li>
+        <li>A personal thank-you email, drafted by AI</li>
+        <li>Non-refundable, emotionally and financially</li>
+      </ul>
+      <button class="btn alt small" type="button" data-toast="Lifetime deal paused while we look up what 'lifetime' legally means.">Become a Founder</button>
+    </div>
+  </div>
+
+  <h2 class="comic">What People Are Saying</h2>
+  <p class="sub">Real reviews from real people (names changed to protect them, and also invented).</p>
+  <div class="quotes">
+    <blockquote><div class="stars">★★★★★</div><p>"I haven't downloaded it, but the landing page has so many gradients."</p><footer>John Doe, Example City</footer></blockquote>
+    <blockquote><div class="stars">★★★★★</div><p>"This changed my life. I'm the developer's mom."</p><footer>Mom</footer></blockquote>
+    <blockquote><div class="stars">★★★★★</div><p>"As an AI language model, I cannot provide a personal testimonial, but YALCA sounds great!"</p><footer>Testimonial generator</footer></blockquote>
+    <blockquote><div class="stars">★☆☆☆☆</div><p>"Scanner identified my playmat as Stitch. Lost 14 lore to a deck with 14 Stitches."</p><footer>Verified pre-orderer (refund pending)</footer></blockquote>
+  </div>
+
+  <h2 class="comic">Roadmap 🗺️</h2>
+  <p class="sub">Our ambitious, investor-ready vision for the future.</p>
+  <ol class="roadmap">
+    <li><b>Q1</b><span>Launch 🚀 (pushed from last Q1)</span></li>
+    <li><b>Q2</b><span>Rewrite everything in a newer framework that came out in Q1</span></li>
+    <li><b>Q3</b><span>Add AI to the AI</span></li>
+    <li><b>Q4</b><span>Pivot to crypto. Rename to YALCAcoin.</span></li>
+    <li><b>Q5</b><span>Discover there is no Q5. Sunset the app. Thank you for being part of our incredible journey.</span></li>
+  </ol>
+
+  <h2 class="comic">FAQ</h2>
+  <details>
+    <summary>Is my collection data safe?</summary>
+    <p>Your data is stored in a spreadsheet that anyone with the link can edit, which is safe because nobody knows the link. The link is in the app's source code.</p>
+  </details>
+  <details>
+    <summary>How is YALCA different from the other apps?</summary>
+    <p>It has a Y at the start. Also, the other apps were built by people who know how to code, which honestly feels like an unfair advantage.</p>
+  </details>
+  <details>
+    <summary>Will you add Lorcana's newest set?</summary>
+    <p>Absolutely, within 3 to 5 business sets of its release.</p>
+  </details>
+  <details>
+    <summary>Can I get a refund?</summary>
+    <p>Refunds are processed through our marketplace escrow (see: good vibes).</p>
+  </details>
+  <details>
+    <summary>Who built this?</summary>
+    <p>One guy, one weekend, a lot of energy drinks, and an AI that kept saying "Great question!" Zero lines of code were read by a human.</p>
+  </details>
+
+  <section class="final">
+    <h2 class="grad comic" style="margin-top:0;">Don't Miss Out!!!</h2>
+    <p>Spots are limited*. Pre-order YALCA today for just $29.99 to unlock the ability to pre-order YALCA Premium.</p>
+    <button class="btn" type="button" data-toast="Pre-orders open after the pre-pre-order period ends. Thanks for your enthusiasm (and wallet)!">💳 Pre-order Now</button>
+    <p class="fine">*Spots are not limited. We'll take anyone.</p>
+  </section>
+
+  <footer class="site-foot">
+    <p>© 2024 YALCA Inc. (not incorporated) · Built with ❤️, 🔥 and a free trial · <a href="#" data-toast="Privacy policy is being generated. Please hold.">Privacy Policy</a> · <a href="#" data-toast="By reading this, you've agreed to the Terms. Sorry.">Terms</a></p>
+    <p class="parody"><strong>This page is a parody.</strong> YALCA isn't real: there's no app, no pre-order, nothing to download, and none of the buttons collect any information or money. It's a joke about how many Lorcana collection apps there are. "App A," "App B" and "App C" don't refer to any real app. Not affiliated with Disney, Ravensburger or TCGplayer.</p>
+  </footer>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// TODO: move this to a separate file (never)
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const pad = (n) => String(n).padStart(2, "0");
+
+  let toastTimer;
+  function toast(text) {
+    const t = $("toast");
+    t.textContent = text;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove("show"), 3600);
+  }
+  document.querySelectorAll("[data-toast]").forEach((el) =>
+    el.addEventListener("click", (e) => { e.preventDefault(); toast(el.dataset.toast); }));
+
+  // Early-bird clock: counts down to midnight, then starts over. Urgency!
+  function promoClock() {
+    const now = new Date(), end = new Date(now);
+    end.setHours(24, 0, 0, 0);
+    const s = Math.floor((end - now) / 1000);
+    $("promo-clock").textContent = `${pad(Math.floor(s / 3600))}:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}`;
+  }
+
+  // Launch countdown: always 10 seconds away.
+  const delays = ["Launch delayed. Resetting countdown…", "Launch postponed (AI broke the build). Resetting…", "Almost there! Resetting…", "Launching next quarter. Resetting…"];
+  let launchLeft = 10, delayIndex = 0;
+  function launchTick() {
+    launchLeft--;
+    if (launchLeft < 0) {
+      toast("🚀 " + delays[delayIndex++ % delays.length]);
+      launchLeft = 10;
+    }
+    $("launch").textContent = `00:00:${pad(Math.max(launchLeft, 0))}`;
+  }
+
+  setInterval(() => { promoClock(); launchTick(); }, 1000);
+  promoClock();
+
+  // "Neural network"
+  const guesses = [
+    "Mickey Mouse - Brave Little Tailor (probably)",
+    "Stitch (it's always Stitch)",
+    "A playmat? Or a very large card.",
+    "Your thumb (Enchanted)",
+    "Card not recognized. Have you tried owning a different card?",
+    "Maleficent - Monstrous Dragon, but sideways",
+    "That's a Pokémon card. Wrong app. Actually, wrong 40 apps.",
+  ];
+  let scanning = false;
+  $("scan").addEventListener("click", () => {
+    if (scanning) return;
+    scanning = true;
+    const bar = $("scan-bar"), result = $("scan-result"), prog = bar.parentElement;
+    const confidence = Math.floor(Math.random() * 12) + 1;
+    let pct = 0;
+    result.textContent = "Scanning… consulting the neural network…";
+    const step = setInterval(() => {
+      // Speeds to 99%, then thinks about it for a while.
+      pct = pct < 99 ? Math.min(99, pct + 9 + Math.random() * 14) : 99;
+      bar.style.width = pct + "%";
+      prog.setAttribute("aria-valuenow", Math.round(pct));
+      if (pct >= 99) result.textContent = "99%… still 99%… almost…";
+    }, 180);
+    setTimeout(() => {
+      clearInterval(step);
+      bar.style.width = "100%";
+      prog.setAttribute("aria-valuenow", 100);
+      const guess = guesses[Math.floor(Math.random() * guesses.length)];
+      result.textContent = `Identified: ${guess} · Confidence: ${confidence}% · Market price: $${(Math.random() * 400).toFixed(2)} (vibes-based)`;
+      scanning = false;
+    }, 3600);
+  });
+
+  console.log("YALCA debug mode: ON (we forgot to turn it off)");
+})();
+</script>
+</body>
+</html>
