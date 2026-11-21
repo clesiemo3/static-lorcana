@@ -61,6 +61,25 @@ Published tools are in `tools/`; drafts are in `draft_tools/`.
     changing the handle, regenerate it with
     `uv run --with segno python3 scripts/build.py`.
 
+- **Lorcana Events Calendar** (`events_calendar/`, generated): Challenges,
+  CCQs, championships and set releases for the next 12 months, plus US
+  holidays (calculated in the page). Events are marked official, reported, or
+  a window ("Q2 2027", shaded across every day it could fall on).
+  - The events live in `events_calendar/events.json`, one per line. Edit it by
+    hand any time; the build refuses to publish data that fails its checks.
+  - **Weekly update:** `scripts/update-events.sh` runs
+    `events_calendar/update.py`, which asks Claude Code (web search and fetch
+    only, billed to your Claude subscription) for the updated list. It's only
+    written if it passes the checks, every source URL came up in that run's
+    searches (or was already in the file), and no more than 6 upcoming events
+    vanish at once. The script then checks the site builds, commits with a
+    summary of the changes, and pushes. `NO_PUSH=1` commits without pushing.
+  - Install the Monday 9:30 schedule (after the Illumineers Digest's 9:00 run)
+    with `scripts/install-schedule.sh`, remove it with
+    `scripts/install-schedule.sh --uninstall`. The log is
+    `~/Library/Logs/static-lorcana-events.log`. If the Mac is asleep at 9:30,
+    it runs on wake.
+
 - **Lore Watcher** (`draft_tools/lore-watcher.html`, draft until LoreBot's
   maintainer OKs it): a read-only view of a
   [LoreBot](https://lorebot.ink/lore_tracker) lore tracker room, for watching
