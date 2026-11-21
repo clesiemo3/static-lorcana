@@ -9,21 +9,21 @@
   :root {
     --bg: #faf8f4; --surface: #ffffff; --text: #1f1d1a; --muted: #6b665e;
     --border: #e6e1d8; --accent: #6a3fa0; --accent-soft: #f1ebf8; --on-accent: #ffffff;
-    --set: #c98a00; --dlc: #80387b; --ccq: #0189c4; --champ: #d3082f;
+    --set: #c98a00; --dlc: #80387b; --ccq: #0189c4; --champ: #d3082f; --holiday: #5d7393;
     --past: #b9b3a8; --today: #298a34;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
       --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236; --on-accent: #15131a;
-      --set: #f4b300; --dlc: #c77dc1; --ccq: #3fb3ea; --champ: #ff5c7a;
+      --set: #f4b300; --dlc: #c77dc1; --ccq: #3fb3ea; --champ: #ff5c7a; --holiday: #9fb4d1;
       --past: #4d4757; --today: #4ade80;
     }
   }
   :root[data-theme="dark"] {
     --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
     --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236; --on-accent: #15131a;
-    --set: #f4b300; --dlc: #c77dc1; --ccq: #3fb3ea; --champ: #ff5c7a;
+    --set: #f4b300; --dlc: #c77dc1; --ccq: #3fb3ea; --champ: #ff5c7a; --holiday: #9fb4d1;
     --past: #4d4757; --today: #4ade80;
   }
   * { box-sizing: border-box; }
@@ -43,6 +43,7 @@
 
   /* Event type colors */
   .t-set { --c: var(--set); } .t-dlc { --c: var(--dlc); } .t-ccq { --c: var(--ccq); } .t-champ { --c: var(--champ); }
+  .t-holiday { --c: var(--holiday); }
 
   .controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 18px 0 6px; }
   .chips { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -111,10 +112,11 @@
   .months { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin-top: 18px; }
   .month { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 10px 8px; }
   .month h3 { font-size: 0.98rem; margin: 0 0 6px 2px; }
-  .dow, .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  /* minmax(0, 1fr) keeps all seven columns equal even when a day has many dots. */
+  .dow, .days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
   .dow span { font-size: 0.68rem; text-align: center; color: var(--muted); }
   .day {
-    position: relative; aspect-ratio: 1; border: 0; border-radius: 6px; padding: 2px 0 0;
+    position: relative; aspect-ratio: 1; min-width: 0; overflow: hidden; border: 0; border-radius: 6px; padding: 2px 0 0;
     background: transparent; color: var(--text); font-size: 0.78rem;
     display: flex; flex-direction: column; align-items: center; gap: 2px;
   }
@@ -125,7 +127,11 @@
   .day.has:hover, .day.has:focus-visible { background: var(--accent-soft); }
   .day.selected { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
   .day.win { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--wc) 22%, transparent) 0 3px, transparent 3px 6px); }
-  .dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 90%; }
+  /* Holidays mark the day number instead of adding a dot. */
+  .day.hol .num { color: var(--holiday); font-weight: 700; text-decoration: underline 2px; text-underline-offset: 2px; }
+  .day.hol.past .num { opacity: 0.6; }
+  .dots { display: flex; gap: 2px; align-items: center; justify-content: center; max-width: 100%; }
+  .dots .more { font-size: 0.58rem; line-height: 6px; color: var(--muted); font-weight: 700; }
   .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
   .dot.reported { background: transparent; box-shadow: inset 0 0 0 1.5px var(--c); }
 
@@ -171,7 +177,7 @@
   <a class="back" href="../">← All tools</a>
   <div class="kicker">Disney Lorcana · next 12 months</div>
   <h1>Lorcana Events Calendar</h1>
-  <p class="intro muted">Disney Lorcana Challenges (DLC), Challenge Championship Qualifiers (CCQ), championships and set releases. When only a rough window is known, like "Q2 2027", the event is shaded across every day it could fall on. Dates last checked <strong id="checked"></strong>.</p>
+  <p class="intro muted">Disney Lorcana Challenges (DLC), Challenge Championship Qualifiers (CCQ), championships and set releases, plus US holidays for planning around. When only a rough window is known, like "Q2 2027", the event is shaded across every day it could fall on. Dates last checked <strong id="checked"></strong>.</p>
 
   <div class="controls">
     <div class="chips" id="types" role="group" aria-label="Event types"></div>
@@ -226,6 +232,7 @@
     dlc:   { label: "Challenges (DLC)", short: "DLC" },
     ccq:   { label: "Qualifiers (CCQ)", short: "CCQ" },
     champ: { label: "Championships", short: "Championship" },
+    holiday: { label: "US holidays", short: "Holiday" },
   };
   const CERT = { official: "Official", reported: "Reported", window: "Window" };
   const SRC = {
@@ -325,6 +332,50 @@
   const rangeEnd = new Date(today.getFullYear(), today.getMonth() + 12, 0); // last day of the 12th month
   const MONTHS = Array.from({ length: 12 }, (_, i) => new Date(rangeStart.getFullYear(), rangeStart.getMonth() + i, 1));
 
+  // ---------- US holidays, calculated so they stay right in any year ----------
+  const nthWeekday = (y, m, wd, n) => { const d = new Date(y, m, 1); d.setDate(1 + ((wd - d.getDay() + 7) % 7) + (n - 1) * 7); return d; };
+  const lastWeekday = (y, m, wd) => { const d = new Date(y, m + 1, 0); d.setDate(d.getDate() - ((d.getDay() - wd + 7) % 7)); return d; };
+  function easter(y) { // Anonymous Gregorian algorithm
+    const a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+    const f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30;
+    const i = Math.floor(c / 4), k = c % 4, l = (32 + 2 * e + 2 * i - h - k) % 7, m = Math.floor((a + 11 * h + 22 * l) / 451);
+    const month = Math.floor((h + l - 7 * m + 114) / 31), day = ((h + l - 7 * m + 114) % 31) + 1;
+    return new Date(y, month - 1, day);
+  }
+  // Federal holidays on a weekend are observed on the nearest weekday.
+  function observed(d) {
+    const o = new Date(d);
+    if (d.getDay() === 6) o.setDate(o.getDate() - 1);
+    else if (d.getDay() === 0) o.setDate(o.getDate() + 1);
+    return o.getTime() === d.getTime() ? "" : `Observed ${o.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}.`;
+  }
+  function usHolidays(y) {
+    const fixed = (m, d) => new Date(y, m, d);
+    return [
+      ["New Year's Day", fixed(0, 1), true],
+      ["Martin Luther King Jr. Day", nthWeekday(y, 0, 1, 3)],
+      ["Presidents' Day", nthWeekday(y, 1, 1, 3)],
+      ["Easter", easter(y)],
+      ["Mother's Day", nthWeekday(y, 4, 0, 2)],
+      ["Memorial Day", lastWeekday(y, 4, 1)],
+      ["Father's Day", nthWeekday(y, 5, 0, 3)],
+      ["Juneteenth", fixed(5, 19), true],
+      ["Independence Day", fixed(6, 4), true],
+      ["Labor Day", nthWeekday(y, 8, 1, 1)],
+      ["Columbus / Indigenous Peoples' Day", nthWeekday(y, 9, 1, 2)],
+      ["Halloween", fixed(9, 31)],
+      ["Veterans Day", fixed(10, 11), true],
+      ["Thanksgiving", nthWeekday(y, 10, 4, 4)],
+      ["Christmas Eve", fixed(11, 24)],
+      ["Christmas Day", fixed(11, 25), true],
+      ["New Year's Eve", fixed(11, 31)],
+    ].map(([name, d, federalFixed]) => ({
+      type: "holiday", cert: "official", name, start: key(d), region: "United States",
+      note: federalFixed ? observed(d) : "", src: [],
+    }));
+  }
+  for (let y = today.getFullYear(); y <= today.getFullYear() + 1; y++) EVENTS.push(...usHolidays(y));
+
   EVENTS.forEach((e, i) => {
     e.id = i;
     e.s = parse(e.start);
@@ -345,7 +396,9 @@
     set(k, v) { try { localStorage.setItem("events-cal:" + k, JSON.stringify(v)); } catch (_) {} },
   };
 
-  const shownTypes = new Set(store.get("types", Object.keys(TYPES)));
+  // Remember hidden types (not shown ones) so newly added types start visible.
+  const hiddenTypes = new Set(store.get("hiddenTypes", []));
+  const shownTypes = new Set(Object.keys(TYPES).filter((t) => !hiddenTypes.has(t)));
   let region = store.get("region", "All");
   let view = store.get("view", window.matchMedia("(max-width: 600px)").matches ? "list" : "calendar");
   let selected = null; // { kind: "day", key } or { kind: "event", id }
@@ -356,7 +409,7 @@
     b.addEventListener("click", () => {
       shownTypes.has(t) ? shownTypes.delete(t) : shownTypes.add(t);
       b.setAttribute("aria-pressed", shownTypes.has(t));
-      store.set("types", [...shownTypes]);
+      store.set("hiddenTypes", Object.keys(TYPES).filter((x) => !shownTypes.has(x)));
       render();
     });
     return b;
@@ -372,8 +425,9 @@
     view = b.dataset.view; store.set("view", view); render();
   }));
 
-  // Worldwide events (set releases, Worlds) show under every region.
-  const visible = () => inRange.filter((e) => shownTypes.has(e.type) && (region === "All" || e.region === region || e.region === "Worldwide"));
+  // Worldwide events (set releases, Worlds) and holidays show under every region.
+  const visible = () => inRange.filter((e) => shownTypes.has(e.type) &&
+    (region === "All" || e.region === region || e.region === "Worldwide" || e.type === "holiday"));
 
   // ---------- Event card ----------
   function card(e) {
@@ -391,9 +445,9 @@
         e.note ? el("div", { className: "note", textContent: e.note }) : null,
         el("div", { className: "badges" },
           el("span", { className: "badge", textContent: TYPES[e.type].short }),
-          el("span", { className: "badge cert", textContent: CERT[e.cert] }),
-          e.region === "Worldwide" ? null : el("span", { className: "badge", textContent: e.region })),
-        el("div", { className: "src muted" }, "Source: ", ...srcs)));
+          e.type === "holiday" ? null : el("span", { className: "badge cert", textContent: CERT[e.cert] }),
+          e.region === "Worldwide" || e.type === "holiday" ? null : el("span", { className: "badge", textContent: e.region })),
+        srcs.length ? el("div", { className: "src muted" }, "Source: ", ...srcs) : null));
   }
 
   // ---------- Timeline ----------
@@ -428,19 +482,20 @@
         m.addEventListener("click", () => select({ kind: "event", id: e.id }));
         lane.append(m);
       }
-      rows.push(el("div", { className: "tl-label", textContent: info.short === "Championship" ? "Champs" : info.short }), lane);
+      const label = { champ: "Champs", holiday: "Holidays" }[t] || info.short;
+      rows.push(el("div", { className: "tl-label", textContent: label }), lane);
     }
     $("timeline").replaceChildren(...rows);
   }
 
   // ---------- Calendar ----------
   function renderCalendar(events) {
-    const byDay = new Map(); // key -> { exact: [], windows: [] }
+    const byDay = new Map(); // key -> { exact: [], windows: [], holidays: [] }
     for (const e of events) {
       for (let d = new Date(e.s); d <= e.e; d.setDate(d.getDate() + 1)) {
         const k = key(d);
-        if (!byDay.has(k)) byDay.set(k, { exact: [], windows: [] });
-        byDay.get(k)[e.cert === "window" ? "windows" : "exact"].push(e);
+        if (!byDay.has(k)) byDay.set(k, { exact: [], windows: [], holidays: [] });
+        byDay.get(k)[e.type === "holiday" ? "holidays" : e.cert === "window" ? "windows" : "exact"].push(e);
       }
     }
     const DOW = ["S", "M", "T", "W", "T", "F", "S"];
@@ -457,15 +512,21 @@
         if (selected?.kind === "day" && selected.key === k) cls.push("selected");
         let style = "";
         if (info?.windows.length) { cls.push("win"); style = `--wc: var(--${info.windows[0].type})`; }
-        const dots = info ? el("span", { className: "dots" }, ...info.exact.slice(0, 6).map((e) => el("i", { className: `dot t-${e.type} ${e.cert}` }))) : null;
+        if (info?.holidays.length) cls.push("hol");
+        // Up to three dots fit in a day; beyond that show two and a "+N" count.
+        const shown = info?.exact.length > 3 ? info.exact.slice(0, 2) : info?.exact ?? [];
+        const extra = (info?.exact.length ?? 0) - shown.length;
+        const dots = info ? el("span", { className: "dots" },
+          ...shown.map((e) => el("i", { className: `dot t-${e.type} ${e.cert}` })),
+          extra ? el("span", { className: "more", textContent: `+${extra}` }) : null) : null;
         if (info) {
           cls.push("has");
-          const names = [...info.exact.map((e) => e.name), ...info.windows.map((e) => `${e.name} (possible)`)];
-          const b = el("button", { type: "button", className: cls.join(" "), style, ariaLabel: `${short(d, true)}: ${names.join("; ")}`, title: names.join("\n") }, el("span", { textContent: n }), dots);
+          const names = [...info.holidays.map((e) => e.name), ...info.exact.map((e) => e.name), ...info.windows.map((e) => `${e.name} (possible)`)];
+          const b = el("button", { type: "button", className: cls.join(" "), style, ariaLabel: `${short(d, true)}: ${names.join("; ")}`, title: names.join("\n") }, el("span", { className: "num", textContent: n }), dots);
           b.addEventListener("click", () => select({ kind: "day", key: k }));
           cells.push(b);
         } else {
-          cells.push(el("span", { className: cls.join(" ") }, el("span", { textContent: n })));
+          cells.push(el("span", { className: cls.join(" ") }, el("span", { className: "num", textContent: n })));
         }
       }
       return el("section", { className: "month" },
