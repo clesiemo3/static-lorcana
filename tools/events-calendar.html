@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lorcana Events Calendar</title>
+  <meta name="description" content="Disney Lorcana Challenges (DLC), qualifiers (CCQ), championships and set releases for the next 12 months, on a timeline, calendar and list. Unannounced dates like &quot;Q2&quot; show as the whole range they could fall in.">
+<style>
+  :root {
+    --bg: #faf8f4; --surface: #ffffff; --text: #1f1d1a; --muted: #6b665e;
+    --border: #e6e1d8; --accent: #6a3fa0; --accent-soft: #f1ebf8; --on-accent: #ffffff;
+    --set: #c98a00; --dlc: #80387b; --ccq: #0189c4; --champ: #d3082f;
+    --past: #b9b3a8; --today: #298a34;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
+      --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236; --on-accent: #15131a;
+      --set: #f4b300; --dlc: #c77dc1; --ccq: #3fb3ea; --champ: #ff5c7a;
+      --past: #4d4757; --today: #4ade80;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15131a; --surface: #1e1b24; --text: #ece8f1; --muted: #a29cab;
+    --border: #332e3b; --accent: #c3a3ec; --accent-soft: #2a2236; --on-accent: #15131a;
+    --set: #f4b300; --dlc: #c77dc1; --ccq: #3fb3ea; --champ: #ff5c7a;
+    --past: #4d4757; --today: #4ade80;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 64px; }
+  a { color: var(--accent); }
+  h1 { font-size: 1.8rem; line-height: 1.2; margin: 0.15em 0 0.3em; }
+  h2 { font-size: 1.15rem; margin: 34px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+  .back { font-size: 0.9rem; text-decoration: none; }
+  .kicker { color: var(--muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 10px; }
+  .muted { color: var(--muted); font-size: 0.9rem; }
+  .intro { max-width: 720px; margin: 0; }
+  button { font: inherit; cursor: pointer; }
+
+  /* Event type colors */
+  .t-set { --c: var(--set); } .t-dlc { --c: var(--dlc); } .t-ccq { --c: var(--ccq); } .t-champ { --c: var(--champ); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin: 18px 0 6px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; padding: 4px 12px 4px 8px;
+    border-radius: 999px; background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  }
+  .chip .sw { width: 12px; height: 12px; border-radius: 50%; background: var(--c); }
+  .chip[aria-pressed="false"] { color: var(--muted); opacity: 0.6; }
+  .chip[aria-pressed="false"] .sw { background: transparent; border: 2px solid var(--c); }
+  select {
+    font: inherit; font-size: 0.9rem; padding: 5px 8px; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-left: auto; }
+  .seg button { border: 0; padding: 5px 14px; background: var(--surface); color: var(--text); font-size: 0.9rem; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); font-weight: 600; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 0.82rem; color: var(--muted); margin: 8px 0 0; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .key { display: inline-block; width: 22px; height: 12px; border-radius: 3px; }
+  .key.official { background: var(--accent); }
+  .key.reported { border: 2px dashed var(--accent); }
+  .key.window { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--accent) 45%, transparent) 0 3px, transparent 3px 6px); border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent); }
+
+  /* ---- Timeline ---- */
+  .timeline { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 12px 8px; margin-top: 14px; }
+  .tl-grid { display: grid; grid-template-columns: 92px 1fr; row-gap: 6px; }
+  .tl-label { font-size: 0.8rem; font-weight: 600; color: var(--muted); align-self: center; }
+  .tl-lane { position: relative; height: 26px; border-radius: 6px; background: color-mix(in srgb, var(--border) 40%, transparent); }
+  .tl-months { position: relative; height: 18px; font-size: 0.72rem; color: var(--muted); }
+  .tl-months span { position: absolute; top: 0; transform: translateX(2px); white-space: nowrap; }
+  .tl-months b { font-weight: 400; }
+  .tl-months .narrow { display: none; }
+  .tl-tick { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); }
+  .tl-today { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--today); z-index: 2; pointer-events: none; }
+  .mark {
+    position: absolute; top: 3px; height: 20px; min-width: 7px; border-radius: 4px; border: 0; padding: 0;
+    background: var(--c); opacity: 0.9;
+  }
+  .mark.reported { background: color-mix(in srgb, var(--c) 30%, transparent); outline: 2px dashed var(--c); outline-offset: -2px; }
+  .mark.window {
+    top: 6px; height: 14px; opacity: 1;
+    background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--c) 55%, transparent) 0 4px, transparent 4px 8px);
+    outline: 1px solid color-mix(in srgb, var(--c) 60%, transparent); outline-offset: -1px;
+  }
+  .mark:hover, .mark:focus-visible { opacity: 1; z-index: 3; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--c); }
+  .mark.selected { z-index: 3; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); }
+  @media (max-width: 600px) {
+    .tl-grid { grid-template-columns: 54px 1fr; }
+    .tl-label { font-size: 0.72rem; }
+  }
+  @media (max-width: 720px) {
+    .tl-months .full { display: none; }
+    .tl-months .narrow { display: inline; }
+  }
+
+  /* ---- Detail panel ---- */
+  .detail { margin-top: 14px; background: var(--accent-soft); border-radius: 12px; padding: 12px 14px; scroll-margin-top: 12px; }
+  .detail[hidden] { display: none; }
+  .detail-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .detail-head strong { font-size: 1rem; }
+  .x { border: 0; background: none; color: var(--muted); font-size: 1.4rem; line-height: 1; padding: 0 4px; }
+
+  /* ---- Calendar ---- */
+  .months { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; margin-top: 18px; }
+  .month { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 10px 8px; }
+  .month h3 { font-size: 0.98rem; margin: 0 0 6px 2px; }
+  .dow, .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .dow span { font-size: 0.68rem; text-align: center; color: var(--muted); }
+  .day {
+    position: relative; aspect-ratio: 1; border: 0; border-radius: 6px; padding: 2px 0 0;
+    background: transparent; color: var(--text); font-size: 0.78rem;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .day.blank { visibility: hidden; }
+  .day.past { color: var(--past); }
+  .day.today { box-shadow: inset 0 0 0 2px var(--today); font-weight: 700; }
+  .day.has { cursor: pointer; }
+  .day.has:hover, .day.has:focus-visible { background: var(--accent-soft); }
+  .day.selected { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+  .day.win { background: repeating-linear-gradient(135deg, color-mix(in srgb, var(--wc) 22%, transparent) 0 3px, transparent 3px 6px); }
+  .dots { display: flex; gap: 2px; flex-wrap: wrap; justify-content: center; max-width: 90%; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+  .dot.reported { background: transparent; box-shadow: inset 0 0 0 1.5px var(--c); }
+
+  /* ---- Event cards (list view and detail panel) ---- */
+  .list-month { margin-top: 22px; }
+  .list-month h3 { font-size: 1rem; margin: 0 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .ev {
+    display: grid; grid-template-columns: 6px 118px 1fr; gap: 0 12px; align-items: start;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px 10px 0;
+    margin: 8px 0; overflow: hidden;
+  }
+  .ev .bar { align-self: stretch; background: var(--c); margin: -10px 0; }
+  .ev.reported .bar { background: repeating-linear-gradient(180deg, var(--c) 0 6px, transparent 6px 10px); }
+  .ev.window .bar { background: repeating-linear-gradient(135deg, var(--c) 0 3px, transparent 3px 6px); }
+  .ev.past { opacity: 0.55; }
+  .ev .when { font-weight: 700; font-size: 0.9rem; font-variant-numeric: tabular-nums; }
+  .ev .when small { display: block; font-weight: 400; color: var(--muted); font-size: 0.78rem; }
+  .ev h4 { margin: 0; font-size: 0.98rem; line-height: 1.3; }
+  .ev .where { color: var(--muted); font-size: 0.86rem; }
+  .ev .note { font-size: 0.84rem; margin-top: 3px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+  .badge { font-size: 0.7rem; font-weight: 600; border-radius: 4px; padding: 0 6px; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--text); }
+  .badge.cert { background: var(--accent-soft); color: var(--accent); }
+  .ev .src { font-size: 0.78rem; }
+  @media (max-width: 520px) {
+    .ev { grid-template-columns: 6px 1fr; }
+    .ev .when { grid-column: 2; }
+    .ev .body { grid-column: 2; margin-top: 4px; }
+    .seg { margin-left: 0; }
+  }
+
+  .tba { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; padding: 0; list-style: none; }
+  .tba li { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 0.9rem; }
+  .tba li small { display: block; color: var(--muted); }
+  .sources { font-size: 0.88rem; padding-left: 1.2em; }
+  .sources li { margin: 4px 0; }
+  .empty { text-align: center; padding: 30px 0; }
+  footer { margin-top: 40px; color: var(--muted); font-size: 0.85rem; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="../">← All tools</a>
+  <div class="kicker">Disney Lorcana · next 12 months</div>
+  <h1>Lorcana Events Calendar</h1>
+  <p class="intro muted">Disney Lorcana Challenges (DLC), Challenge Championship Qualifiers (CCQ), championships and set releases. When only a rough window is known, like "Q2 2027", the event is shaded across every day it could fall on. Dates last checked <strong id="checked"></strong>.</p>
+
+  <div class="controls">
+    <div class="chips" id="types" role="group" aria-label="Event types"></div>
+    <label class="muted">Region <select id="region" aria-label="Region"></select></label>
+    <div class="seg" role="group" aria-label="View">
+      <button type="button" data-view="calendar">Calendar</button>
+      <button type="button" data-view="list">List</button>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i class="key official"></i>Official date</span>
+    <span><i class="key reported"></i>Reported date (fan tracker or organizer, not yet on the official site)</span>
+    <span><i class="key window"></i>Window: could fall anywhere in the shaded range</span>
+  </div>
+
+  <div class="timeline" aria-label="Year at a glance">
+    <div class="tl-grid" id="timeline"></div>
+  </div>
+
+  <section class="detail" id="detail" hidden aria-live="polite">
+    <div class="detail-head"><strong id="detail-title"></strong><button class="x" type="button" id="detail-close" aria-label="Close details">×</button></div>
+    <div id="detail-body"></div>
+  </section>
+
+  <div id="calendar-view"><div class="months" id="months"></div></div>
+  <div id="list-view" hidden></div>
+  <p class="empty muted" id="empty" hidden>No events match these filters.</p>
+
+  <h2>Announced, no date yet</h2>
+  <ul class="tba" id="tba"></ul>
+  <p class="muted">Each Disney Lorcana Challenge weekend also runs an Infinity Constructed CCQ on site; those aren't listed separately.</p>
+
+  <h2>Sources</h2>
+  <ol class="sources">
+    <li><a href="https://www.disneylorcana.com/en-US/play/lorcana-challenge" target="_blank" rel="noopener">Disney Lorcana: Lorcana Challenge</a>: official North American and European Challenges and CCQs.</li>
+    <li><a href="https://lorcanaplayer.com/disney-lorcana-challenge-26-27-tracker/" target="_blank" rel="noopener">Lorcana Player: Challenge 26/27 Season Tracker</a>: Asia and Oceania events, CCQ caps and venues.</li>
+    <li><a href="https://lorcanaplayer.com/lorcana-release-event-calendar/" target="_blank" rel="noopener">Lorcana Player: Release &amp; Event Calendar</a>: set release dates and extra Asia-Pacific events.</li>
+    <li><a href="https://icv2.com/articles/news/view/63139/ravensburger-announces-cosmic-quest-d23" target="_blank" rel="noopener">ICv2: Ravensburger announces Cosmic Quest</a>: Q2 2027 release window.</li>
+    <li><a href="https://lorcana.fandom.com/wiki/Disney_Lorcana_2026-2027_Competitive_Season" target="_blank" rel="noopener">Lorcana Wiki: 2026–2027 Competitive Season</a> and <a href="https://disney.fandom.com/wiki/Disney_Lorcana" target="_blank" rel="noopener">Disney Wiki: Disney Lorcana</a>: Set 17 window (unconfirmed).</li>
+    <li><a href="https://www.ukgamesexpo.co.uk/events/3353-disney-lorcana-tcg-ccq/" target="_blank" rel="noopener">UK Games Expo: Disney Lorcana TCG CCQ</a>.</li>
+  </ol>
+
+  <footer>Dates change: check the organizer's page before you book travel. Not affiliated with Disney or Ravensburger.</footer>
+</main>
+
+<script>
+(() => {
+  const CHECKED = "2026-11-20";
+
+  const TYPES = {
+    set:   { label: "Set releases", short: "Set" },
+    dlc:   { label: "Challenges (DLC)", short: "DLC" },
+    ccq:   { label: "Qualifiers (CCQ)", short: "CCQ" },
+    champ: { label: "Championships", short: "Championship" },
+  };
+  const CERT = { official: "Official", reported: "Reported", window: "Window" };
+  const SRC = {
+    official: "https://www.disneylorcana.com/en-US/play/lorcana-challenge",
+    tracker: "https://lorcanaplayer.com/disney-lorcana-challenge-26-27-tracker/",
+    calendar: "https://lorcanaplayer.com/lorcana-release-event-calendar/",
+    icv2: "https://icv2.com/articles/news/view/63139/ravensburger-announces-cosmic-quest-d23",
+    wiki: "https://disney.fandom.com/wiki/Disney_Lorcana",
+    ukge: "https://www.ukgamesexpo.co.uk/events/3353-disney-lorcana-tcg-ccq/",
+  };
+  const SRC_NAME = {
+    official: "disneylorcana.com", tracker: "Lorcana Player tracker", calendar: "Lorcana Player calendar",
+    icv2: "ICv2", wiki: "Disney Wiki", ukge: "UK Games Expo",
+  };
+
+  // start/end are inclusive dates. "window" events could fall on any day in the range.
+  const EVENTS = [
+    // Set releases
+    { type: "set", cert: "reported", name: "Into the Inkdark (Set 15) prerelease", start: "2027-02-05", region: "Worldwide", note: "Local game stores. Ravensburger has officially said only Q1 2027.", src: ["calendar"] },
+    { type: "set", cert: "reported", name: "Into the Inkdark (Set 15) release", start: "2027-02-12", region: "Worldwide", note: "Wide release. First set with Collector Boosters. Officially Q1 2027.", src: ["calendar"] },
+    { type: "set", cert: "window", name: "Cosmic Quest (Set 16) release", start: "2027-04-01", end: "2027-06-30", when: "Q2 2027", region: "Worldwide", note: "Announced at D23 for Q2 2027; no exact date yet.", src: ["icv2"] },
+    { type: "set", cert: "window", name: "Set 17 (untitled) release", start: "2027-07-01", end: "2027-09-30", when: "Q3 2027", region: "Worldwide", note: "Only a fan wiki gives this window, so treat it as a guess.", src: ["wiki"] },
+
+    // Disney Lorcana Challenges
+    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Nanjing", city: "Nanjing", country: "China", start: "2026-11-20", end: "2026-11-22", region: "Asia", note: "Sources differ on whether it starts Nov 20 (early check-in) or Nov 21.", src: ["tracker", "calendar"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Tampa", city: "Tampa, FL", country: "USA", start: "2026-12-18", end: "2026-12-20", region: "North America", src: ["official"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Milwaukee", city: "Milwaukee, WI", country: "USA", start: "2027-02-19", end: "2027-02-21", region: "North America", src: ["official"] },
+    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Singapore", city: "Singapore", country: "Singapore", start: "2027-02-26", end: "2027-02-28", region: "Asia", src: ["calendar"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Turin", city: "Turin", country: "Italy", start: "2027-03-05", end: "2027-03-07", region: "Europe", note: "Lingotto Fiere.", src: ["official"] },
+    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Melbourne", city: "Melbourne, VIC", country: "Australia", start: "2027-03-05", end: "2027-03-07", region: "Oceania", note: "Pullman Melbourne Albert Park. Moved from Feb 26–28.", src: ["tracker", "calendar"] },
+    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Chiba (Winter)", city: "Chiba", country: "Japan", start: "2027-03-27", region: "Asia", note: "Makuhari Messe.", src: ["tracker"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Las Vegas", city: "Las Vegas, NV", country: "USA", start: "2027-04-09", end: "2027-04-11", region: "North America", note: "Moved from Apr 30–May 2.", src: ["official"] },
+    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Hong Kong", city: "Hong Kong", country: "Hong Kong", start: "2027-04-09", end: "2027-04-11", region: "Asia", src: ["calendar"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Lyon", city: "Lyon", country: "France", start: "2027-05-07", end: "2027-05-09", region: "Europe", note: "Eurexpo Lyon.", src: ["official"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Utrecht", city: "Utrecht", country: "Netherlands", start: "2027-05-28", end: "2027-05-30", region: "Europe", note: "Jaarbeurs.", src: ["official"] },
+    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Taipei", city: "Taipei", country: "Taiwan", start: "2027-06-11", end: "2027-06-13", region: "Asia", src: ["calendar"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Portland", city: "Portland, OR", country: "USA", start: "2027-06-18", end: "2027-06-20", region: "North America", src: ["official"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Toronto", city: "Toronto, ON", country: "Canada", start: "2027-07-16", end: "2027-07-18", region: "North America", src: ["official"] },
+    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Düsseldorf", city: "Düsseldorf", country: "Germany", start: "2027-07-23", end: "2027-07-25", region: "Europe", note: "CCD Congress Center.", src: ["official"] },
+
+    // Championships
+    { type: "champ", cert: "reported", name: "Disney Lorcana World Championship 2026", city: "Aulani, Hawaii", country: "USA", start: "2026-12-04", end: "2026-12-06", region: "Worldwide", note: "Invite only. Final event of the 2025–26 season.", src: ["calendar"] },
+    { type: "champ", cert: "window", name: "Oceania Championship 2027", city: "Melbourne, VIC", country: "Australia", start: "2027-09-01", end: "2027-10-31", when: "September or October 2027", region: "Oceania", note: "Venue to be announced.", src: ["tracker"] },
+
+    // Challenge Championship Qualifiers
+    { type: "ccq", cert: "official", name: "Once Upon a CCQ (Last Stand Collectibles)", city: "Yakima, WA", country: "USA", start: "2026-11-21", region: "North America", note: "128 players.", src: ["official"] },
+    { type: "ccq", cert: "official", name: "Ravensburger Museum CCQ", city: "Ravensburg", country: "Germany", start: "2026-11-21", region: "Europe", note: "128 players.", src: ["official"] },
+    { type: "ccq", cert: "official", name: "GoodGames Bern CCQ", city: "Bern", country: "Switzerland", start: "2026-11-22", region: "Europe", note: "128 players.", src: ["official"] },
+    { type: "ccq", cert: "official", name: "Tri-County Collectibles CCQ", city: "Fenton, MI", country: "USA", start: "2026-11-28", end: "2026-11-29", region: "North America", note: "128 players.", src: ["official"] },
+    { type: "ccq", cert: "official", name: "Manga Barcelona CCQ (Victory Road)", city: "Barcelona", country: "Spain", start: "2026-12-05", end: "2026-12-06", region: "Europe", note: "Fira Barcelona Gran Via. Winner gets a slot at the 2027 European Championship.", src: ["official"] },
+    { type: "ccq", cert: "official", name: "RNG Games Paisley CCQ", city: "Paisley", country: "UK", start: "2026-12-05", end: "2026-12-06", region: "Europe", note: "128 players.", src: ["official"] },
+    { type: "ccq", cert: "reported", name: "League Castle Hong Kong CCQ", city: "Hong Kong", country: "Hong Kong", start: "2026-12-05", end: "2026-12-06", region: "Asia", note: "The Mills. 200 players.", src: ["calendar"] },
+    { type: "ccq", cert: "reported", name: "M3 x XiaoKeAi TCG Shanghai CCQ", city: "Shanghai", country: "China", start: "2026-12-06", region: "Asia", src: ["tracker"] },
+    { type: "ccq", cert: "official", name: "Collector Store CCQ", city: "St. Peters, MO", country: "USA", start: "2026-12-12", region: "North America", note: "208 players. $5,000 prize pool.", src: ["official"] },
+    { type: "ccq", cert: "reported", name: "Kadou Beijing CCQ", city: "Beijing", country: "China", start: "2026-12-19", region: "Asia", src: ["tracker"] },
+    { type: "ccq", cert: "reported", name: "CardMaster Taipei CCQ", city: "Taipei", country: "Taiwan", start: "2026-12-19", region: "Asia", note: "128 players.", src: ["calendar"] },
+    { type: "ccq", cert: "official", name: "Desert Valleys Showdown CCQ", city: "Ridgecrest, CA", country: "USA", start: "2026-12-19", end: "2026-12-20", region: "North America", note: "Kerr McGee Center. 216 players.", src: ["official"] },
+    { type: "ccq", cert: "reported", name: "Tokyo CCQ", city: "Tokyo", country: "Japan", start: "2027-01-11", region: "Asia", src: ["tracker"] },
+    { type: "ccq", cert: "official", name: "Living Realms Wakefield CCQ", city: "Wakefield", country: "UK", start: "2027-01-16", end: "2027-01-17", region: "Europe", note: "The Shed.", src: ["official"] },
+    { type: "ccq", cert: "reported", name: "Topdeck Hero Laval CCQ", city: "Laval, QC", country: "Canada", start: "2027-02-06", region: "North America", note: "128 players.", src: ["tracker"] },
+    { type: "ccq", cert: "reported", name: "Melbourne CCQ", city: "Melbourne, VIC", country: "Australia", start: "2027-03-05", region: "Oceania", note: "At the Melbourne Challenge.", src: ["tracker", "calendar"] },
+    { type: "ccq", cert: "reported", name: "Geeksphere CCQ", city: "Wichita, KS", country: "USA", start: "2027-03-13", end: "2027-03-14", region: "North America", note: "224 players.", src: ["tracker"] },
+    { type: "ccq", cert: "official", name: "DuBischDra Zürich CCQ", city: "Zürich", country: "Switzerland", start: "2027-03-20", end: "2027-03-21", region: "Europe", note: "Sources list 128 or 140 players.", src: ["official"] },
+    { type: "ccq", cert: "reported", name: "Sydney CCQ", city: "Sydney, NSW", country: "Australia", start: "2027-04-03", region: "Oceania", note: "Harold Park Community Hall.", src: ["tracker"] },
+    { type: "ccq", cert: "reported", name: "Glimmer Showdown CCQ", city: "Bladel", country: "Netherlands", start: "2027-04-04", region: "Europe", note: "128 players.", src: ["tracker"] },
+    { type: "ccq", cert: "reported", name: "UK Games Expo CCQ", city: "Birmingham", country: "UK", start: "2027-06-04", end: "2027-06-06", region: "Europe", note: "At UK Games Expo; check the expo's schedule for the CCQ day.", src: ["ukge"] },
+    { type: "ccq", cert: "reported", name: "Auckland CCQ", city: "Auckland", country: "New Zealand", start: "2027-07-31", region: "Oceania", note: "Alexandra Park Raceway.", src: ["tracker"] },
+  ];
+
+  const TBA = [
+    ["North American Championship 2027", "North America"],
+    ["European Championship 2027", "Europe"],
+    ["Japan Championship 2027", "Asia"],
+    ["China Championship 2027", "Asia"],
+    ["Asia Championship 2027", "Asia"],
+    ["Disney Lorcana World Championship 2027", "Worldwide"],
+    ["Brazil events for the 2026–27 season", "South America"],
+  ];
+
+  // ---------- Dates ----------
+  const parse = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
+  const DAY = 86400000;
+  const dayNum = (d) => Math.round(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / DAY);
+  const key = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const MONTH = (d, opts = {}) => d.toLocaleDateString("en-US", { month: "long", year: "numeric", ...opts });
+  const short = (d, year) => d.toLocaleDateString("en-US", { month: "short", day: "numeric", ...(year ? { year: "numeric" } : {}) });
+  function rangeText(e) {
+    const s = e.s, t = e.e;
+    if (dayNum(s) === dayNum(t)) return short(s, true);
+    if (s.getFullYear() !== t.getFullYear()) return `${short(s, true)} – ${short(t, true)}`;
+    if (s.getMonth() === t.getMonth()) return `${short(s)}–${t.getDate()}, ${t.getFullYear()}`;
+    return `${short(s)} – ${short(t)}, ${t.getFullYear()}`;
+  }
+
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const rangeStart = new Date(today.getFullYear(), today.getMonth(), 1);
+  const rangeEnd = new Date(today.getFullYear(), today.getMonth() + 12, 0); // last day of the 12th month
+  const MONTHS = Array.from({ length: 12 }, (_, i) => new Date(rangeStart.getFullYear(), rangeStart.getMonth() + i, 1));
+
+  EVENTS.forEach((e, i) => {
+    e.id = i;
+    e.s = parse(e.start);
+    e.e = parse(e.end || e.start);
+    e.past = e.e < today;
+  });
+  const inRange = EVENTS.filter((e) => e.e >= rangeStart && e.s <= rangeEnd);
+
+  // ---------- Filters ----------
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, props = {}, ...kids) => {
+    const n = Object.assign(document.createElement(tag), props);
+    n.append(...kids.filter((k) => k !== null && k !== undefined && k !== ""));
+    return n;
+  };
+  const store = {
+    get(k, d) { try { return JSON.parse(localStorage.getItem("events-cal:" + k)) ?? d; } catch (_) { return d; } },
+    set(k, v) { try { localStorage.setItem("events-cal:" + k, JSON.stringify(v)); } catch (_) {} },
+  };
+
+  const shownTypes = new Set(store.get("types", Object.keys(TYPES)));
+  let region = store.get("region", "All");
+  let view = store.get("view", window.matchMedia("(max-width: 600px)").matches ? "list" : "calendar");
+  let selected = null; // { kind: "day", key } or { kind: "event", id }
+
+  $("types").replaceChildren(...Object.entries(TYPES).map(([t, info]) => {
+    const b = el("button", { type: "button", className: `chip t-${t}` }, el("span", { className: "sw" }), info.label);
+    b.setAttribute("aria-pressed", shownTypes.has(t));
+    b.addEventListener("click", () => {
+      shownTypes.has(t) ? shownTypes.delete(t) : shownTypes.add(t);
+      b.setAttribute("aria-pressed", shownTypes.has(t));
+      store.set("types", [...shownTypes]);
+      render();
+    });
+    return b;
+  }));
+
+  const REGIONS = ["All", "North America", "Europe", "Asia", "Oceania"];
+  $("region").replaceChildren(...REGIONS.map((r) => el("option", { value: r, textContent: r === "All" ? "All regions" : r })));
+  if (!REGIONS.includes(region)) region = "All";
+  $("region").value = region;
+  $("region").addEventListener("change", () => { region = $("region").value; store.set("region", region); render(); });
+
+  document.querySelectorAll("[data-view]").forEach((b) => b.addEventListener("click", () => {
+    view = b.dataset.view; store.set("view", view); render();
+  }));
+
+  // Worldwide events (set releases, Worlds) show under every region.
+  const visible = () => inRange.filter((e) => shownTypes.has(e.type) && (region === "All" || e.region === region || e.region === "Worldwide"));
+
+  // ---------- Event card ----------
+  function card(e) {
+    const where = [e.city, e.country].filter(Boolean).join(", ") || e.region;
+    const when = e.cert === "window"
+      ? el("div", { className: "when" }, e.when, el("small", { textContent: `sometime ${rangeText(e)}` }))
+      : el("div", { className: "when" }, rangeText(e), e.past ? el("small", { textContent: "already happened" }) : null);
+    const srcs = e.src.map((s, i) => [i ? " · " : "", el("a", { href: SRC[s], target: "_blank", rel: "noopener", textContent: SRC_NAME[s] })]).flat();
+    return el("article", { className: `ev t-${e.type} ${e.cert}${e.past ? " past" : ""}` },
+      el("div", { className: "bar" }),
+      when,
+      el("div", { className: "body" },
+        el("h4", { textContent: e.name }),
+        el("div", { className: "where", textContent: where }),
+        e.note ? el("div", { className: "note", textContent: e.note }) : null,
+        el("div", { className: "badges" },
+          el("span", { className: "badge", textContent: TYPES[e.type].short }),
+          el("span", { className: "badge cert", textContent: CERT[e.cert] }),
+          e.region === "Worldwide" ? null : el("span", { className: "badge", textContent: e.region })),
+        el("div", { className: "src muted" }, "Source: ", ...srcs)));
+  }
+
+  // ---------- Timeline ----------
+  function renderTimeline(events) {
+    const t0 = dayNum(rangeStart), span = dayNum(rangeEnd) - t0 + 1;
+    const pct = (d) => ((dayNum(d) - t0) / span) * 100;
+    const ticks = () => MONTHS.map((m) => el("div", { className: "tl-tick", style: `left:${pct(m)}%` }));
+    const todayLine = () => el("div", { className: "tl-today", style: `left:${pct(today)}%`, title: "Today" });
+
+    const months = el("div", { className: "tl-months" }, ...MONTHS.map((m) => {
+      const name = m.toLocaleDateString("en-US", { month: "short" });
+      const year = m.getMonth() === 0 || m === MONTHS[0] ? " ’" + String(m.getFullYear()).slice(2) : "";
+      return el("span", { style: `left:${pct(m)}%`, title: MONTH(m) },
+        el("b", { className: "full", textContent: name + year }),
+        el("b", { className: "narrow", textContent: name[0] }));
+    }));
+    const rows = [el("div"), months];
+    for (const [t, info] of Object.entries(TYPES)) {
+      if (!shownTypes.has(t)) continue;
+      const lane = el("div", { className: "tl-lane" }, ...ticks(), todayLine());
+      // Windows first so exact dates draw on top of them.
+      const laneEvents = events.filter((e) => e.type === t).sort((a, b) => (b.cert === "window") - (a.cert === "window"));
+      for (const e of laneEvents) {
+        const s = e.s < rangeStart ? rangeStart : e.s, en = e.e > rangeEnd ? rangeEnd : e.e;
+        const left = pct(s), width = Math.max(((dayNum(en) - dayNum(s) + 1) / span) * 100, 0.6);
+        const m = el("button", {
+          type: "button", className: `mark t-${t} ${e.cert}${selected?.kind === "event" && selected.id === e.id ? " selected" : ""}`,
+          style: `left:${left}%;width:${width}%`,
+          title: `${e.name} · ${e.cert === "window" ? e.when : rangeText(e)}`,
+          ariaLabel: `${e.name}, ${e.cert === "window" ? e.when : rangeText(e)}`,
+        });
+        m.addEventListener("click", () => select({ kind: "event", id: e.id }));
+        lane.append(m);
+      }
+      rows.push(el("div", { className: "tl-label", textContent: info.short === "Championship" ? "Champs" : info.short }), lane);
+    }
+    $("timeline").replaceChildren(...rows);
+  }
+
+  // ---------- Calendar ----------
+  function renderCalendar(events) {
+    const byDay = new Map(); // key -> { exact: [], windows: [] }
+    for (const e of events) {
+      for (let d = new Date(e.s); d <= e.e; d.setDate(d.getDate() + 1)) {
+        const k = key(d);
+        if (!byDay.has(k)) byDay.set(k, { exact: [], windows: [] });
+        byDay.get(k)[e.cert === "window" ? "windows" : "exact"].push(e);
+      }
+    }
+    const DOW = ["S", "M", "T", "W", "T", "F", "S"];
+    $("months").replaceChildren(...MONTHS.map((m) => {
+      const cells = [];
+      for (let i = 0; i < m.getDay(); i++) cells.push(el("span", { className: "day blank" }));
+      const last = new Date(m.getFullYear(), m.getMonth() + 1, 0).getDate();
+      for (let n = 1; n <= last; n++) {
+        const d = new Date(m.getFullYear(), m.getMonth(), n), k = key(d);
+        const info = byDay.get(k);
+        const cls = ["day"];
+        if (d < today) cls.push("past");
+        if (dayNum(d) === dayNum(today)) cls.push("today");
+        if (selected?.kind === "day" && selected.key === k) cls.push("selected");
+        let style = "";
+        if (info?.windows.length) { cls.push("win"); style = `--wc: var(--${info.windows[0].type})`; }
+        const dots = info ? el("span", { className: "dots" }, ...info.exact.slice(0, 6).map((e) => el("i", { className: `dot t-${e.type} ${e.cert}` }))) : null;
+        if (info) {
+          cls.push("has");
+          const names = [...info.exact.map((e) => e.name), ...info.windows.map((e) => `${e.name} (possible)`)];
+          const b = el("button", { type: "button", className: cls.join(" "), style, ariaLabel: `${short(d, true)}: ${names.join("; ")}`, title: names.join("\n") }, el("span", { textContent: n }), dots);
+          b.addEventListener("click", () => select({ kind: "day", key: k }));
+          cells.push(b);
+        } else {
+          cells.push(el("span", { className: cls.join(" ") }, el("span", { textContent: n })));
+        }
+      }
+      return el("section", { className: "month" },
+        el("h3", { textContent: MONTH(m) }),
+        el("div", { className: "dow" }, ...DOW.map((x) => el("span", { textContent: x }))),
+        el("div", { className: "days" }, ...cells));
+    }));
+  }
+
+  // ---------- List ----------
+  function renderList(events) {
+    const groups = new Map();
+    for (const e of [...events].sort((a, b) => a.s - b.s || (a.cert === "window") - (b.cert === "window") || a.name.localeCompare(b.name))) {
+      const m = e.s < rangeStart ? rangeStart : e.s;
+      const k = MONTH(m);
+      if (!groups.has(k)) groups.set(k, []);
+      groups.get(k).push(e);
+    }
+    $("list-view").replaceChildren(...[...groups].map(([k, evs]) =>
+      el("section", { className: "list-month" }, el("h3", { textContent: k }), ...evs.map(card))));
+  }
+
+  // ---------- Detail panel ----------
+  function select(sel) {
+    selected = sel;
+    render();
+    $("detail").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+  function renderDetail(events) {
+    if (!selected) { $("detail").hidden = true; return; }
+    let title, list = [], maybe = [];
+    if (selected.kind === "event") {
+      const e = events.find((x) => x.id === selected.id);
+      if (!e) { selected = null; $("detail").hidden = true; return; }
+      title = TYPES[e.type].short;
+      list = [e];
+    } else {
+      const d = parse(selected.key);
+      title = d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+      list = events.filter((e) => e.cert !== "window" && e.s <= d && d <= e.e);
+      maybe = events.filter((e) => e.cert === "window" && e.s <= d && d <= e.e);
+    }
+    $("detail-title").textContent = title;
+    $("detail-body").replaceChildren(
+      ...list.map(card),
+      ...(maybe.length ? [el("p", { className: "muted", style: "margin:10px 0 0", textContent: "Could also fall on this day:" }), ...maybe.map(card)] : []));
+    $("detail").hidden = false;
+  }
+  $("detail-close").addEventListener("click", () => { selected = null; render(); });
+
+  // ---------- Render ----------
+  function render() {
+    const events = visible();
+    document.querySelectorAll("[data-view]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.view === view));
+    $("calendar-view").hidden = view !== "calendar";
+    $("list-view").hidden = view !== "list";
+    $("empty").hidden = events.length > 0;
+    renderTimeline(events);
+    if (view === "calendar") renderCalendar(events); else renderList(events);
+    renderDetail(events);
+  }
+
+  $("checked").textContent = parse(CHECKED).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  $("tba").replaceChildren(...TBA.map(([name, where]) => el("li", {}, name, el("small", { textContent: where }))));
+  render();
+})();
+</script>
+</body>
+</html>
