@@ -22,9 +22,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+from events_calendar import build as events_calendar  # noqa: E402
 from for_sale import build as for_sale  # noqa: E402
 
-GENERATORS = [for_sale]
+GENERATORS = [events_calendar, for_sale]
 TOOLS = ROOT / "tools"
 DRAFTS = ROOT / "draft_tools"
 OUT = ROOT / "_site"

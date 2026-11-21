@@ -211,22 +211,14 @@
   <p class="muted">Each Disney Lorcana Challenge weekend also runs an Infinity Constructed CCQ on site; those aren't listed separately.</p>
 
   <h2>Sources</h2>
-  <ol class="sources">
-    <li><a href="https://www.disneylorcana.com/en-US/play/lorcana-challenge" target="_blank" rel="noopener">Disney Lorcana: Lorcana Challenge</a>: official North American and European Challenges and CCQs.</li>
-    <li><a href="https://lorcanaplayer.com/disney-lorcana-challenge-26-27-tracker/" target="_blank" rel="noopener">Lorcana Player: Challenge 26/27 Season Tracker</a>: Asia and Oceania events, CCQ caps and venues.</li>
-    <li><a href="https://lorcanaplayer.com/lorcana-release-event-calendar/" target="_blank" rel="noopener">Lorcana Player: Release &amp; Event Calendar</a>: set release dates and extra Asia-Pacific events.</li>
-    <li><a href="https://icv2.com/articles/news/view/63139/ravensburger-announces-cosmic-quest-d23" target="_blank" rel="noopener">ICv2: Ravensburger announces Cosmic Quest</a>: Q2 2027 release window.</li>
-    <li><a href="https://lorcana.fandom.com/wiki/Disney_Lorcana_2026-2027_Competitive_Season" target="_blank" rel="noopener">Lorcana Wiki: 2026–2027 Competitive Season</a> and <a href="https://disney.fandom.com/wiki/Disney_Lorcana" target="_blank" rel="noopener">Disney Wiki: Disney Lorcana</a>: Set 17 window (unconfirmed).</li>
-    <li><a href="https://www.ukgamesexpo.co.uk/events/3353-disney-lorcana-tcg-ccq/" target="_blank" rel="noopener">UK Games Expo: Disney Lorcana TCG CCQ</a>.</li>
-  </ol>
+  <ol class="sources" id="sources"></ol>
 
-  <footer>Dates change: check the organizer's page before you book travel. Not affiliated with Disney or Ravensburger.</footer>
+  <footer>Updated weekly from the sources above. Dates change: check the organizer's page before you book travel. Not affiliated with Disney or Ravensburger.</footer>
 </main>
 
+<script id="events-data" type="application/json">__EVENTS_JSON__</script>
 <script>
 (() => {
-  const CHECKED = "2026-11-20";
-
   const TYPES = {
     set:   { label: "Set releases", short: "Set" },
     dlc:   { label: "Challenges (DLC)", short: "DLC" },
@@ -235,82 +227,11 @@
     holiday: { label: "US holidays", short: "Holiday" },
   };
   const CERT = { official: "Official", reported: "Reported", window: "Window" };
-  const SRC = {
-    official: "https://www.disneylorcana.com/en-US/play/lorcana-challenge",
-    tracker: "https://lorcanaplayer.com/disney-lorcana-challenge-26-27-tracker/",
-    calendar: "https://lorcanaplayer.com/lorcana-release-event-calendar/",
-    icv2: "https://icv2.com/articles/news/view/63139/ravensburger-announces-cosmic-quest-d23",
-    wiki: "https://disney.fandom.com/wiki/Disney_Lorcana",
-    ukge: "https://www.ukgamesexpo.co.uk/events/3353-disney-lorcana-tcg-ccq/",
-  };
-  const SRC_NAME = {
-    official: "disneylorcana.com", tracker: "Lorcana Player tracker", calendar: "Lorcana Player calendar",
-    icv2: "ICv2", wiki: "Disney Wiki", ukge: "UK Games Expo",
-  };
-
-  // start/end are inclusive dates. "window" events could fall on any day in the range.
-  const EVENTS = [
-    // Set releases
-    { type: "set", cert: "reported", name: "Into the Inkdark (Set 15) prerelease", start: "2027-02-05", region: "Worldwide", note: "Local game stores. Ravensburger has officially said only Q1 2027.", src: ["calendar"] },
-    { type: "set", cert: "reported", name: "Into the Inkdark (Set 15) release", start: "2027-02-12", region: "Worldwide", note: "Wide release. First set with Collector Boosters. Officially Q1 2027.", src: ["calendar"] },
-    { type: "set", cert: "window", name: "Cosmic Quest (Set 16) release", start: "2027-04-01", end: "2027-06-30", when: "Q2 2027", region: "Worldwide", note: "Announced at D23 for Q2 2027; no exact date yet.", src: ["icv2"] },
-    { type: "set", cert: "window", name: "Set 17 (untitled) release", start: "2027-07-01", end: "2027-09-30", when: "Q3 2027", region: "Worldwide", note: "Only a fan wiki gives this window, so treat it as a guess.", src: ["wiki"] },
-
-    // Disney Lorcana Challenges
-    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Nanjing", city: "Nanjing", country: "China", start: "2026-11-20", end: "2026-11-22", region: "Asia", note: "Sources differ on whether it starts Nov 20 (early check-in) or Nov 21.", src: ["tracker", "calendar"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Tampa", city: "Tampa, FL", country: "USA", start: "2026-12-18", end: "2026-12-20", region: "North America", src: ["official"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Milwaukee", city: "Milwaukee, WI", country: "USA", start: "2027-02-19", end: "2027-02-21", region: "North America", src: ["official"] },
-    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Singapore", city: "Singapore", country: "Singapore", start: "2027-02-26", end: "2027-02-28", region: "Asia", src: ["calendar"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Turin", city: "Turin", country: "Italy", start: "2027-03-05", end: "2027-03-07", region: "Europe", note: "Lingotto Fiere.", src: ["official"] },
-    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Melbourne", city: "Melbourne, VIC", country: "Australia", start: "2027-03-05", end: "2027-03-07", region: "Oceania", note: "Pullman Melbourne Albert Park. Moved from Feb 26–28.", src: ["tracker", "calendar"] },
-    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Chiba (Winter)", city: "Chiba", country: "Japan", start: "2027-03-27", region: "Asia", note: "Makuhari Messe.", src: ["tracker"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Las Vegas", city: "Las Vegas, NV", country: "USA", start: "2027-04-09", end: "2027-04-11", region: "North America", note: "Moved from Apr 30–May 2.", src: ["official"] },
-    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Hong Kong", city: "Hong Kong", country: "Hong Kong", start: "2027-04-09", end: "2027-04-11", region: "Asia", src: ["calendar"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Lyon", city: "Lyon", country: "France", start: "2027-05-07", end: "2027-05-09", region: "Europe", note: "Eurexpo Lyon.", src: ["official"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Utrecht", city: "Utrecht", country: "Netherlands", start: "2027-05-28", end: "2027-05-30", region: "Europe", note: "Jaarbeurs.", src: ["official"] },
-    { type: "dlc", cert: "reported", name: "Disney Lorcana Challenge Taipei", city: "Taipei", country: "Taiwan", start: "2027-06-11", end: "2027-06-13", region: "Asia", src: ["calendar"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Portland", city: "Portland, OR", country: "USA", start: "2027-06-18", end: "2027-06-20", region: "North America", src: ["official"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Toronto", city: "Toronto, ON", country: "Canada", start: "2027-07-16", end: "2027-07-18", region: "North America", src: ["official"] },
-    { type: "dlc", cert: "official", name: "Disney Lorcana Challenge Düsseldorf", city: "Düsseldorf", country: "Germany", start: "2027-07-23", end: "2027-07-25", region: "Europe", note: "CCD Congress Center.", src: ["official"] },
-
-    // Championships
-    { type: "champ", cert: "reported", name: "Disney Lorcana World Championship 2026", city: "Aulani, Hawaii", country: "USA", start: "2026-12-04", end: "2026-12-06", region: "Worldwide", note: "Invite only. Final event of the 2025–26 season.", src: ["calendar"] },
-    { type: "champ", cert: "window", name: "Oceania Championship 2027", city: "Melbourne, VIC", country: "Australia", start: "2027-09-01", end: "2027-10-31", when: "September or October 2027", region: "Oceania", note: "Venue to be announced.", src: ["tracker"] },
-
-    // Challenge Championship Qualifiers
-    { type: "ccq", cert: "official", name: "Once Upon a CCQ (Last Stand Collectibles)", city: "Yakima, WA", country: "USA", start: "2026-11-21", region: "North America", note: "128 players.", src: ["official"] },
-    { type: "ccq", cert: "official", name: "Ravensburger Museum CCQ", city: "Ravensburg", country: "Germany", start: "2026-11-21", region: "Europe", note: "128 players.", src: ["official"] },
-    { type: "ccq", cert: "official", name: "GoodGames Bern CCQ", city: "Bern", country: "Switzerland", start: "2026-11-22", region: "Europe", note: "128 players.", src: ["official"] },
-    { type: "ccq", cert: "official", name: "Tri-County Collectibles CCQ", city: "Fenton, MI", country: "USA", start: "2026-11-28", end: "2026-11-29", region: "North America", note: "128 players.", src: ["official"] },
-    { type: "ccq", cert: "official", name: "Manga Barcelona CCQ (Victory Road)", city: "Barcelona", country: "Spain", start: "2026-12-05", end: "2026-12-06", region: "Europe", note: "Fira Barcelona Gran Via. Winner gets a slot at the 2027 European Championship.", src: ["official"] },
-    { type: "ccq", cert: "official", name: "RNG Games Paisley CCQ", city: "Paisley", country: "UK", start: "2026-12-05", end: "2026-12-06", region: "Europe", note: "128 players.", src: ["official"] },
-    { type: "ccq", cert: "reported", name: "League Castle Hong Kong CCQ", city: "Hong Kong", country: "Hong Kong", start: "2026-12-05", end: "2026-12-06", region: "Asia", note: "The Mills. 200 players.", src: ["calendar"] },
-    { type: "ccq", cert: "reported", name: "M3 x XiaoKeAi TCG Shanghai CCQ", city: "Shanghai", country: "China", start: "2026-12-06", region: "Asia", src: ["tracker"] },
-    { type: "ccq", cert: "official", name: "Collector Store CCQ", city: "St. Peters, MO", country: "USA", start: "2026-12-12", region: "North America", note: "208 players. $5,000 prize pool.", src: ["official"] },
-    { type: "ccq", cert: "reported", name: "Kadou Beijing CCQ", city: "Beijing", country: "China", start: "2026-12-19", region: "Asia", src: ["tracker"] },
-    { type: "ccq", cert: "reported", name: "CardMaster Taipei CCQ", city: "Taipei", country: "Taiwan", start: "2026-12-19", region: "Asia", note: "128 players.", src: ["calendar"] },
-    { type: "ccq", cert: "official", name: "Desert Valleys Showdown CCQ", city: "Ridgecrest, CA", country: "USA", start: "2026-12-19", end: "2026-12-20", region: "North America", note: "Kerr McGee Center. 216 players.", src: ["official"] },
-    { type: "ccq", cert: "reported", name: "Tokyo CCQ", city: "Tokyo", country: "Japan", start: "2027-01-11", region: "Asia", src: ["tracker"] },
-    { type: "ccq", cert: "official", name: "Living Realms Wakefield CCQ", city: "Wakefield", country: "UK", start: "2027-01-16", end: "2027-01-17", region: "Europe", note: "The Shed.", src: ["official"] },
-    { type: "ccq", cert: "reported", name: "Topdeck Hero Laval CCQ", city: "Laval, QC", country: "Canada", start: "2027-02-06", region: "North America", note: "128 players.", src: ["tracker"] },
-    { type: "ccq", cert: "reported", name: "Melbourne CCQ", city: "Melbourne, VIC", country: "Australia", start: "2027-03-05", region: "Oceania", note: "At the Melbourne Challenge.", src: ["tracker", "calendar"] },
-    { type: "ccq", cert: "reported", name: "Geeksphere CCQ", city: "Wichita, KS", country: "USA", start: "2027-03-13", end: "2027-03-14", region: "North America", note: "224 players.", src: ["tracker"] },
-    { type: "ccq", cert: "official", name: "DuBischDra Zürich CCQ", city: "Zürich", country: "Switzerland", start: "2027-03-20", end: "2027-03-21", region: "Europe", note: "Sources list 128 or 140 players.", src: ["official"] },
-    { type: "ccq", cert: "reported", name: "Sydney CCQ", city: "Sydney, NSW", country: "Australia", start: "2027-04-03", region: "Oceania", note: "Harold Park Community Hall.", src: ["tracker"] },
-    { type: "ccq", cert: "reported", name: "Glimmer Showdown CCQ", city: "Bladel", country: "Netherlands", start: "2027-04-04", region: "Europe", note: "128 players.", src: ["tracker"] },
-    { type: "ccq", cert: "reported", name: "UK Games Expo CCQ", city: "Birmingham", country: "UK", start: "2027-06-04", end: "2027-06-06", region: "Europe", note: "At UK Games Expo; check the expo's schedule for the CCQ day.", src: ["ukge"] },
-    { type: "ccq", cert: "reported", name: "Auckland CCQ", city: "Auckland", country: "New Zealand", start: "2027-07-31", region: "Oceania", note: "Alexandra Park Raceway.", src: ["tracker"] },
-  ];
-
-  const TBA = [
-    ["North American Championship 2027", "North America"],
-    ["European Championship 2027", "Europe"],
-    ["Japan Championship 2027", "Asia"],
-    ["China Championship 2027", "Asia"],
-    ["Asia Championship 2027", "Asia"],
-    ["Disney Lorcana World Championship 2027", "Worldwide"],
-    ["Brazil events for the 2026–27 season", "South America"],
-  ];
+  // Filled in by events_calendar/build.py from events.json.
+  const DATA = JSON.parse(document.getElementById("events-data").textContent);
+  const EVENTS = DATA.events;
+  const TBA = DATA.tba;
+  const sourceName = (url) => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch (_) { return url; } };
 
   // ---------- Dates ----------
   const parse = (s) => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d); };
@@ -435,7 +356,13 @@
     const when = e.cert === "window"
       ? el("div", { className: "when" }, e.when, el("small", { textContent: `sometime ${rangeText(e)}` }))
       : el("div", { className: "when" }, rangeText(e), e.past ? el("small", { textContent: "already happened" }) : null);
-    const srcs = e.src.map((s, i) => [i ? " · " : "", el("a", { href: SRC[s], target: "_blank", rel: "noopener", textContent: SRC_NAME[s] })]).flat();
+    // Number repeated sites ("lorcanaplayer.com (2)") so two links from one site are distinguishable.
+    const names = (e.sources || []).map(sourceName);
+    const srcs = (e.sources || []).map((url, i) => {
+      const n = names.slice(0, i + 1).filter((x) => x === names[i]).length;
+      const label = names.filter((x) => x === names[i]).length > 1 ? `${names[i]} (${n})` : names[i];
+      return [i ? " · " : "", el("a", { href: url, target: "_blank", rel: "noopener", textContent: label })];
+    }).flat();
     return el("article", { className: `ev t-${e.type} ${e.cert}${e.past ? " past" : ""}` },
       el("div", { className: "bar" }),
       when,
@@ -589,8 +516,14 @@
     renderDetail(events);
   }
 
-  $("checked").textContent = parse(CHECKED).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-  $("tba").replaceChildren(...TBA.map(([name, where]) => el("li", {}, name, el("small", { textContent: where }))));
+  $("checked").textContent = parse(DATA.checked).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+  $("tba").replaceChildren(...TBA.map((t) => el("li", {}, t.name, el("small", { textContent: t.region }))));
+  // Every page cited by an event, most-cited first.
+  const counts = new Map();
+  for (const e of EVENTS) for (const url of e.sources || []) counts.set(url, (counts.get(url) || 0) + 1);
+  $("sources").replaceChildren(...[...counts].sort((a, b) => b[1] - a[1]).map(([url, n]) =>
+    el("li", {}, el("a", { href: url, target: "_blank", rel: "noopener", textContent: url.replace(/^https?:\/\/(www\.)?/, "") }),
+      el("span", { className: "muted", textContent: ` (${n} event${n === 1 ? "" : "s"})` }))));
   render();
 })();
 </script>
