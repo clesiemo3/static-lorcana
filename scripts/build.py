@@ -24,8 +24,9 @@ sys.path.insert(0, str(ROOT))
 
 from events_calendar import build as events_calendar  # noqa: E402
 from for_sale import build as for_sale  # noqa: E402
+from rov_roster import build as rov_roster  # noqa: E402
 
-GENERATORS = [events_calendar, for_sale]
+GENERATORS = [events_calendar, for_sale, rov_roster]
 TOOLS = ROOT / "tools"
 DRAFTS = ROOT / "draft_tools"
 OUT = ROOT / "_site"

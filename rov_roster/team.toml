@@ -1,0 +1,145 @@
+# Rules of Villainy competitive team. After editing, run:
+#   uv run python3 rov_roster/update.py   (fetches results, rewrites results.json)
+#
+# playhub_id: the Play Hub user id (stable even when someone renames).
+# elorcana:   the id from the player's elorcana.com/profile/<id> link.
+#
+# Profile (shown on the player's tab; edits only need a rebuild, not update.py),
+# transcribed from the team announcement cards:
+#   title, started, inks, favorite_cards, bio (fun facts; results come from
+#   the data, so keep tournament results out), outside (what they enjoy when
+#   not playing).
+# Photos: rov_roster/photos/<id>.jpg is the portrait, <id>-card1.jpg,
+# <id>-card2.jpg… the favorite card images. Players without a portrait show
+# their initials.
+
+[search]
+# Local events: every set championship within `radius_miles` of here, at any
+# size, plus every other event there with at least `min_players` players
+# (1Ks, box tournaments). DLCs, LCQs and championships are searched worldwide
+# regardless of size; CCQs worldwide with at least `min_players`.
+name = "St. Louis"
+latitude = 38.627
+longitude = -90.199
+radius_miles = 200
+min_players = 30
+since = "2025-01-01"
+
+[[player]]
+id = "jimmy"
+name = "Jimmy"
+role = "team"
+playhub_id = 6768
+elorcana = "f1431839-8b6e-4aa0-8b65-a56d1ab1012c"
+title = "Captain Jimmy"
+started = "Set 1"
+inks = ["Amethyst"]
+favorite_cards = ["Gantu, Galactic Federation Captain"]
+bio = [
+  "2nd in Decipher's LotR TCG 16 and under World Championship at GenCon 2006",
+  "Semi competitive MtG player with local top 8s",
+  "Grew up in the 90's and 00's playing Pokemon, Yugioh, Dragonball Z TCGs",
+  "Likes Chicken Tenders",
+]
+outside = "I play video games, develop software, hang out with my wife"
+
+[[player]]
+id = "andy1"
+name = "Andy"
+role = "team"
+playhub_id = 23663
+elorcana = "a52e5236-23a6-498c-93f8-b51001cf7b99"
+title = "Andy"
+started = "Set 1"
+inks = ["Amethyst"]
+favorite_cards = ["Rockstar Stitch"]
+bio = [
+  "Co-Founder of Rules Of Villainy Podcast",
+]
+outside = "Making Lorcana content and playing League of Legends"
+
+[[player]]
+id = "bingbong"
+name = "BING BONG"
+role = "team"
+playhub_id = 29795
+elorcana = "896cbbb6-bb46-42e2-8e18-2f774286ff34"
+title = "RoV Heinz"
+started = "Set 4"
+inks = ["Amethyst"]
+favorite_cards = ["Super Goof"]
+bio = [
+  "Avid Collector of Super Goof: current Super Goof count 300+",
+]
+outside = "Building new Lorcana decks, The McRib, various rec league sports, and art/woodworking projects"
+
+[[player]]
+id = "kirsten"
+name = "Kirsten"
+role = "team"
+playhub_id = 13990
+elorcana = "7b039322-8487-4483-aeb0-018c84fc808d"
+title = "Kirsten"
+started = "Set 1"
+inks = ["Amber", "Steel"]
+favorite_cards = ["Maleficent!"]
+bio = [
+  "Fur Mom to RoV Buster and RoV Lene",
+]
+outside = "Thinking about Disney Lorcana & creating Disney Lorcana content!"
+
+[[player]]
+id = "kristent"
+name = "KristentheGrape 🍇"
+role = "team"
+playhub_id = 211610
+elorcana = "715eab71-1b41-4b3e-967b-1884d9c20360"
+title = "Kristen The Grape 🍇"
+started = "Set 1"
+inks = ["Steel"]
+favorite_cards = ["Pooh Honey Wizard Enchanted", "Ariel Spectacular Singer"]
+bio = [
+  "Prior to playing competitively co-owned a game store and hosted the biggest Lorcana events in St. Louis",
+  "Proud Fur Mom of Umbreon",
+]
+outside = "Playing board games and video games"
+
+[[player]]
+id = "teacup"
+name = "Teacup"
+role = "team"
+playhub_id = 29950
+elorcana = "b182b56c-a4d0-42e3-8bab-f69dcda1b05e"
+title = "RoV Teacup"
+started = "Set 1 (took a break, returned in Set 6)"
+favorite_cards = ["Go Go Tomago - Darting Dynamo"]
+outside = "Playing WoW, Cooking, and thinking about Disney Lorcana"
+
+[[player]]
+id = "andy2"
+name = "Andy 🍇"
+role = "team"
+playhub_id = 8435
+elorcana = "a02efc72-0525-41eb-a17c-5d420a3c9c8b"
+title = "Andy the Grape 🍇"
+started = "Set 1"
+inks = ["Steel"]
+favorite_cards = ["Daisy Duck - Donald's Date"]
+bio = [
+  "Prior to playing competitively co-owned a game store that hosted some of the largest Disney Lorcana tournaments in the STL area to date.",
+]
+outside = "Watching Mizzou sports and playing video games"
+
+[[player]]
+id = "mayor"
+name = "The Mayor 🎩"
+role = "management"
+playhub_id = 8375
+elorcana = "69a9b188-c3df-41c5-a061-13749730e69e"
+
+[[player]]
+id = "vince"
+name = "Vince"
+role = "management"
+playhub_id = 6881
+elorcana = "d7ade1ff-8d4d-4003-92b5-b182e9757d90"

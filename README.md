@@ -80,6 +80,38 @@ Published tools are in `tools/`; drafts are in `draft_tools/`.
     `~/Library/Logs/static-lorcana-events.log`. If the Mac is asleep at 9:30,
     it runs on wake.
 
+- **Rules of Villainy Roster** (`rov_roster/`, generated): the competitive
+  team's results, with team totals, a highlight reel and a tab per player.
+  Styled after [Loredle](https://loredle.villainy.ink).
+  - The team is listed in `rov_roster/team.toml` (Play Hub user id and
+    eLorcana id per player), along with where and how widely to search.
+  - Play Hub can't be searched by player, so `uv run python3
+    rov_roster/update.py` searches events and checks each one's registrations:
+    every DLC, LCQ and continental championship worldwide, CCQs with 30+
+    players, and, within 200 miles of St. Louis, every set championship plus
+    other events with 30+ players. It writes `rov_roster/results.json`
+    (commit it) and caches event downloads in `rov_roster/cache/`
+    (gitignored). Events are only checked once, so reruns are quick.
+  - `rov_roster/lsa/` is copied unchanged from the standings-aggregator
+    project, and its cache files can be copied into `rov_roster/cache/events/`.
+  - Which finishes are highlighted (set championship 1st and 2nd at any size,
+    top 4 with 12+ players, top 8 with 24+; CCQ
+    top 32; DLC 6+ wins; LCQ 4+ wins; continental top 64; top 8 at other big
+    local events) is set in `rov_roster/build.py`, so it can be changed
+    without refetching.
+  - "Best finish" and the highlight reel are ordered by highlighted finishes
+    first, then a size-weighted score: log2(field size ÷ rank), plus 1 for
+    DLCs and continentals and 0.5 for CCQs and LCQs. So a top 32 at a
+    1,700-player DLC outranks 1st at a 40-player event.
+  - Profiles (title, fun facts, favorite inks and cards, what they do outside
+    Lorcana) are in `team.toml`, transcribed from the team announcement
+    cards; editing them only needs a rebuild. Tournament results stay out of
+    the bios, since the page's own stats keep those current.
+  - Photos: `rov_roster/photos/<id>.jpg` is the portrait (the ids in
+    `team.toml`, e.g. `jimmy.jpg`) and `<id>-card1.jpg`, `<id>-card2.jpg` the
+    favorite card images, cropped from the announcement cards. Players
+    without a portrait show their initials.
+
 - **Lore Watcher** (`draft_tools/lore-watcher.html`, draft until LoreBot's
   maintainer OKs it): a read-only view of a
   [LoreBot](https://lorebot.ink/lore_tracker) lore tracker room, for watching

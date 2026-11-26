@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rules of Villainy Roster</title>
+<meta name="description" content="The Rules of Villainy competitive team: set championship, CCQ, DLC, LCQ and continental results, team totals and each player's record.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* Styling follows the Rules of Villainy Loredle site (loredle.villainy.ink). */
+:root {
+  --rov-purple: #6955a4;
+  --rov-purple-bright: #8b68f0;
+  --rov-pink: #eb48a7;
+  --rov-teal: #4ad2b8;
+  --rov-gold: #ffd166;
+  --bg-main: #120d22;
+  --bg-surface: #1e1638;
+  --bg-card: #291f4a;
+  --bg-elevated: #35285e;
+  --text-primary: #fdfbff;
+  --text-secondary: #c5b9e6;
+  --primary-color: #9d7bff;
+  --secondary-color: #2ce5c6;
+  --accent-color: #ff47ab;
+  --silver: #d9dcef;
+  --border: 3px solid #000;
+  --border-thin: 2px solid #000;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --shadow-sm: 3px 3px 0 #000;
+  --shadow-md: 6px 6px 0 #000;
+  --font-display: 'Oswald', 'Space Grotesk', sans-serif;
+  --font-sans: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background-color: var(--bg-main);
+  background-image:
+    radial-gradient(rgba(235, 72, 167, 0.14) 1.5px, transparent 1.5px),
+    radial-gradient(rgba(74, 210, 184, 0.1) 1.5px, var(--bg-main) 1.5px);
+  background-size: 32px 32px;
+  background-position: 0 0, 16px 16px;
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  padding-top: 68px;
+  overflow-x: hidden;
+}
+a { color: var(--secondary-color); }
+h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; letter-spacing: 1.2px; }
+
+/* --- navbar --- */
+.navbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 60px; z-index: 50;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 0 20px;
+  background: var(--bg-surface);
+  border-bottom: var(--border);
+  box-shadow: 0 4px 0 #000;
+}
+.nav-brand {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.45rem;
+  text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.nav-brand span { color: var(--accent-color); }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+  font-size: 0.85rem; padding: 7px 13px; text-decoration: none; white-space: nowrap;
+  background: var(--bg-card); color: var(--text-primary);
+  border: var(--border-thin); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);
+  cursor: pointer; transition: transform .1s ease, box-shadow .1s ease;
+}
+.btn:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #000; }
+.btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+
+main { max-width: 1060px; margin: 0 auto; padding: 22px 16px 80px; }
+
+/* --- hero --- */
+.hero { text-align: center; margin: 8px 0 22px; }
+.hero h1 {
+  font-size: clamp(2.2rem, 7vw, 3.4rem); margin: 0 0 10px; letter-spacing: 2px;
+  color: var(--primary-color); text-shadow: 3px 3px 0 #000; line-height: 1.05;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+  padding: 5px 12px; background: var(--bg-card); color: var(--secondary-color);
+  border: var(--border-thin); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);
+}
+
+/* --- tabs --- */
+.tabs {
+  display: flex; gap: 10px; overflow-x: auto; padding: 4px 6px 12px 2px; margin: 0 -2px 6px;
+  scrollbar-width: thin;
+}
+.tab {
+  flex: none; display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; text-transform: uppercase; letter-spacing: .8px;
+  padding: 6px 12px 6px 6px; color: var(--text-primary); background: var(--bg-card);
+  border: var(--border-thin); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm);
+  cursor: pointer; transition: transform .1s ease, box-shadow .1s ease, background-color .15s;
+}
+.tab.team-tab { padding-left: 12px; }
+.tab:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #000; }
+.tab[aria-selected="true"] { background: var(--secondary-color); color: #000; }
+.tab .avatar { width: 28px; height: 28px; font-size: .75rem; border-width: 2px; box-shadow: none; }
+
+/* --- filters --- */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 4px 0 20px; }
+.filters .label { font-family: var(--font-mono); font-size: .75rem; color: var(--text-secondary); text-transform: uppercase; margin-right: 2px; }
+.chip {
+  font-family: var(--font-mono); font-size: .75rem; font-weight: 700; text-transform: uppercase;
+  padding: 4px 10px; border: var(--border-thin); border-radius: 999px; cursor: pointer;
+  background: var(--bg-surface); color: var(--text-secondary);
+}
+.chip[aria-pressed="true"] { background: var(--bg-elevated); color: var(--text-primary); box-shadow: 2px 2px 0 #000; }
+.chip[aria-pressed="true"]::before { content: "● "; color: var(--cat); }
+
+/* --- cards and tiles --- */
+.card {
+  position: relative; background: var(--bg-card); border: var(--border); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md); padding: 22px 20px 18px; margin: 30px 0 0;
+}
+.card > .tag {
+  position: absolute; top: -13px; left: 16px;
+  font-family: var(--font-mono); font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  padding: 2px 10px; background: var(--accent-color); color: #000;
+  border: var(--border-thin); border-radius: 4px; box-shadow: 2px 2px 0 #000;
+}
+.card > .tag.teal { background: var(--secondary-color); }
+.card > .tag.gold { background: var(--rov-gold); }
+.card > .tag.purple { background: var(--primary-color); }
+.muted { color: var(--text-secondary); }
+.small { font-size: .85rem; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; }
+.tile {
+  background: var(--bg-surface); border: var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+  padding: 12px 14px 10px; min-width: 0;
+}
+.tile .k { font-family: var(--font-mono); font-size: .7rem; text-transform: uppercase; color: var(--text-secondary); }
+.tile .v {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.9rem; line-height: 1.15; margin-top: 2px;
+  text-shadow: 2px 2px 0 #000; overflow-wrap: anywhere;
+}
+.tile .s { font-size: .8rem; color: var(--text-secondary); margin-top: 2px; }
+.tile .v.long { font-size: 1.45rem; padding-top: 6px; }
+.tile.pink .v { color: var(--accent-color); }
+.tile.teal .v { color: var(--secondary-color); }
+.tile.gold .v { color: var(--rov-gold); }
+.tile.purple .v { color: var(--primary-color); }
+
+/* --- avatars --- */
+.avatar {
+  flex: none; width: 44px; height: 44px; border-radius: 50%; overflow: hidden;
+  display: inline-grid; place-items: center; border: var(--border-thin); box-shadow: 2px 2px 0 #000;
+  font-family: var(--font-display); font-weight: 700; color: #000; background: var(--av, var(--primary-color));
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; display: block; }
+
+/* --- highlight reel --- */
+.reel { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+.hl {
+  display: flex; gap: 12px; align-items: flex-start; min-width: 0;
+  background: var(--bg-surface); border: var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+  padding: 12px; color: inherit; text-decoration: none;
+}
+a.hl:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 #000; }
+.hl .body { min-width: 0; flex: 1; }
+.hl .who { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: .6px; }
+.hl .ev { font-size: .88rem; margin-top: 2px; overflow-wrap: anywhere; }
+.hl .meta { font-size: .78rem; color: var(--text-secondary); margin-top: 4px; }
+.place {
+  display: inline-block; font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: .6px;
+  font-size: .8rem; padding: 2px 8px; border: var(--border-thin); border-radius: 4px; box-shadow: 2px 2px 0 #000;
+  color: #000; white-space: nowrap; vertical-align: middle;
+}
+.place.win { background: var(--rov-gold); }
+.place.final { background: var(--silver); }
+.place.top { background: var(--accent-color); }
+.place.good { background: var(--secondary-color); }
+.hl .place { float: right; margin-left: 8px; }
+
+/* --- tables --- */
+.table-wrap { overflow-x: auto; border: var(--border); border-radius: var(--radius-sm); box-shadow: var(--shadow-sm); }
+table { width: 100%; border-collapse: collapse; background: var(--bg-card); font-size: .9rem; }
+th, td { padding: 9px 10px; border-bottom: var(--border-thin); text-align: left; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+th {
+  background: var(--rov-purple); color: #fff; font-family: var(--font-display); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .8px; font-size: .82rem; white-space: nowrap;
+}
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr:nth-child(even) { background: rgba(0, 0, 0, .15); }
+tbody tr:hover { background: rgba(74, 210, 184, .14); }
+tr.click { cursor: pointer; }
+tr.hl-row td:first-child { box-shadow: inset 5px 0 0 var(--hl); }
+.nowrap { white-space: nowrap; }
+.pcell { display: flex; align-items: center; gap: 10px; min-width: 150px; }
+.pcell .avatar { width: 32px; height: 32px; font-size: .8rem; }
+.cat {
+  display: inline-block; font-family: var(--font-mono); font-size: .68rem; font-weight: 700; text-transform: uppercase;
+  padding: 1px 7px; border-radius: 999px; border: 2px solid #000; background: var(--cat); color: #000; white-space: nowrap;
+}
+.mini { display: flex; flex-wrap: wrap; gap: 6px; }
+.mini span {
+  font-size: .78rem; padding: 2px 7px; border-radius: 4px; background: var(--bg-surface); border: 2px solid #000; white-space: nowrap;
+}
+.mini span.lit { border-color: var(--hl); box-shadow: 2px 2px 0 var(--hl); }
+.evname a { color: var(--text-primary); text-decoration: none; }
+.evname a:hover { color: var(--secondary-color); text-decoration: underline; }
+.evname .sub { font-size: .76rem; color: var(--text-secondary); }
+
+/* --- player profile --- */
+.profile { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+.profile .intro { flex: 1 1 300px; min-width: 0; padding-top: 6px; }
+.portrait {
+  width: 200px; aspect-ratio: 4 / 5; object-fit: cover; display: block; flex: none;
+  border: var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-pink); background: var(--bg-card);
+}
+.handle { font-family: var(--font-mono); font-size: .8rem; color: var(--text-secondary); margin-top: 4px; }
+.badge.plain { color: var(--text-primary); }
+.badge.ink { color: #000; background: var(--ink); }
+.bio { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.bio li { position: relative; padding-left: 22px; line-height: 1.4; }
+.bio li::before { content: "◆"; position: absolute; left: 0; top: 0; color: var(--accent-color); font-size: .85rem; }
+.about { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.about .fav-imgs { display: flex; gap: 12px; flex: none; }
+.about .fav-imgs img {
+  width: 130px; aspect-ratio: 5 / 7; object-fit: cover; display: block;
+  border: var(--border-thin); border-radius: 8px; box-shadow: var(--shadow-sm);
+}
+.about dl { margin: 0; flex: 1 1 240px; display: grid; gap: 4px; }
+.about dt { font-family: var(--font-mono); font-size: .72rem; text-transform: uppercase; color: var(--secondary-color); margin-top: 8px; }
+.about dt:first-child { margin-top: 0; }
+.about dd { margin: 0; font-size: 1.05rem; }
+td.best { min-width: 220px; }
+.profile .avatar { width: 112px; height: 112px; font-size: 2.4rem; border-width: 3px; box-shadow: var(--shadow-md); }
+.profile h2 { margin: 0; font-size: clamp(1.7rem, 5vw, 2.4rem); text-shadow: 3px 3px 0 #000; overflow-wrap: anywhere; }
+.profile .tagline { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.role { background: var(--accent-color); color: #000; }
+.role.management { background: var(--rov-gold); }
+
+.empty { padding: 18px; text-align: center; color: var(--text-secondary); }
+.section-note { margin: 0 0 14px; font-size: .88rem; color: var(--text-secondary); }
+footer { text-align: center; font-size: .8rem; color: var(--text-secondary); margin-top: 40px; line-height: 1.6; }
+
+@media (max-width: 560px) {
+  .navbar { padding: 0 12px; }
+  .nav-brand { font-size: 1.1rem; }
+  .card { padding: 20px 14px 14px; }
+  .tile .v { font-size: 1.5rem; }
+  .profile .avatar { width: 84px; height: 84px; font-size: 1.8rem; }
+  .portrait { width: 150px; }
+  .about .fav-imgs img { width: 110px; }
+  .hide-sm { display: none; }
+}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <div class="nav-brand">Rules of <span>Villainy</span></div>
+  <a class="btn" href="../">← All tools</a>
+</nav>
+
+<main>
+  <header class="hero">
+    <h1>The Roster</h1>
+    <div class="badge" id="badge"></div>
+  </header>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="filters" id="filters"></div>
+  <section id="panel" role="tabpanel"></section>
+
+  <footer id="footer"></footer>
+</main>
+
+<script>
+const DATA = __ROSTER_JSON__;
+
+const CATS = {
+  SET:          { label: "Set Champ",   long: "Set championship", color: "#ffd166" },
+  CCQ:          { label: "CCQ",         long: "CCQ",              color: "#ff47ab" },
+  DLC:          { label: "DLC",         long: "Disney Lorcana Challenge", color: "#2ce5c6" },
+  LCQ:          { label: "LCQ",         long: "Last chance qualifier",    color: "#8b68f0" },
+  CHAMPIONSHIP: { label: "Continental", long: "Continental championship", color: "#ff8a5c" },
+  LOCAL:        { label: "Local",       long: "Large local event",        color: "#9fb4ff" },
+};
+const TIER_COLOR = { win: "#ffd166", final: "#d9dcef", top: "#ff47ab", good: "#2ce5c6" };
+const AVATAR_COLORS = ["#9d7bff", "#ff47ab", "#2ce5c6", "#ffd166"];
+
+const players = DATA.players.map((p, i) => ({ ...p, color: AVATAR_COLORS[i % AVATAR_COLORS.length] }));
+const byId = Object.fromEntries(players.map(p => [p.id, p]));
+const events = DATA.events;
+const results = DATA.results.map(r => ({ ...r, ev: events[r.event], p: byId[r.player] })).filter(r => r.ev && r.p);
+
+const catsPresent = Object.keys(CATS).filter(c => results.some(r => r.ev.category === c));
+let shownCats = new Set(catsPresent);
+let current = "team";
+let reelOpen = false;
+const REEL_SIZE = 12;
+
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const pct = (a, b) => b ? Math.round(1000 * a / b) / 10 + "%" : "—";
+const ord = n => n + ({ 1: "st", 2: "nd", 3: "rd" }[(n % 100 >= 11 && n % 100 <= 13) ? 0 : n % 10] || "th");
+const fmtDate = d => new Date(d + "T12:00:00").toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+const initials = name => name.replace(/[^\p{L}\p{N} ]/gu, "").trim().split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase() || "?";
+const record = r => `${r.wins}-${r.losses}${r.draws ? "-" + r.draws : ""}`;
+
+function avatar(p) {
+  const inner = p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy">` : esc(initials(p.name));
+  return `<span class="avatar" style="--av:${p.color}" aria-hidden="true">${inner}</span>`;
+}
+function catTag(c) { return `<span class="cat" style="--cat:${CATS[c].color}">${CATS[c].label}</span>`; }
+function place(h) { return h ? `<span class="place ${h.tier}">${esc(h.label)}</span>` : ""; }
+function finish(r) { return r.rank ? ord(r.rank) : "—"; }
+
+// Best result first: highlighted finishes before the rest, then by the build's
+// score, log2(field size / rank) plus a premier-event bonus, so a top 32 at a
+// 1,700-player DLC beats 1st of 40.
+function better(a, b) {
+  return (!!b.highlight - !!a.highlight) || (b.score ?? -1) - (a.score ?? -1) || b.ev.date.localeCompare(a.ev.date);
+}
+// "21st of 1,747 · 10-3"
+function context(r) {
+  return `${finish(r)} of ${(r.ev.players || 0).toLocaleString()} · ${record(r)}`;
+}
+
+function totals(rows) {
+  const t = { entries: rows.length, events: new Set(rows.map(r => r.event)).size, w: 0, l: 0, d: 0, gw: 0, gl: 0, cuts: 0, hls: 0, wins: 0, top8: 0 };
+  for (const r of rows) {
+    t.w += r.wins; t.l += r.losses; t.d += r.draws; t.gw += r.games_won; t.gl += r.games_lost;
+    if (r.made_top_cut) t.cuts++;
+    if (r.highlight) t.hls++;
+    if (r.rank === 1) t.wins++;
+    if (r.rank && r.rank <= 8 && r.highlight) t.top8++;
+  }
+  t.best = rows.slice().sort(better)[0];
+  return t;
+}
+
+function tile(k, v, s = "", cls = "") {
+  const long = String(v).length > 8 ? " long" : "";
+  return `<div class="tile ${cls}"><div class="k">${k}</div><div class="v${long}">${v}</div>${s ? `<div class="s">${s}</div>` : ""}</div>`;
+}
+function evCell(ev) {
+  return `<div class="evname"><a href="${esc(ev.url)}" target="_blank" rel="noopener">${esc(ev.name)}</a>
+    <div class="sub">${esc(ev.store || "")}${ev.players ? ` · ${ev.players} players` : ""}</div></div>`;
+}
+function highlightCard(r, showWho) {
+  return `<a class="hl" href="${esc(r.ev.url)}" target="_blank" rel="noopener">
+    ${showWho ? avatar(r.p) : ""}
+    <div class="body">
+      ${place(r.highlight)}
+      ${showWho ? `<div class="who">${esc(r.p.name)}</div>` : ""}
+      <div class="ev">${esc(r.ev.name)}</div>
+      <div class="meta">${catTag(r.ev.category)} ${fmtDate(r.ev.date)} · ${context(r)}</div>
+    </div></a>`;
+}
+
+function renderTabs() {
+  const tab = (id, label, extra = "") =>
+    `<button class="tab ${extra}" role="tab" data-id="${id}" aria-selected="${current === id}">${label}</button>`;
+  document.getElementById("tabs").innerHTML =
+    tab("team", "★ Team", "team-tab") + players.map(p => tab(p.id, `${avatar(p)}${esc(p.name)}`)).join("");
+}
+
+function renderFilters() {
+  document.getElementById("filters").innerHTML = `<span class="label">Show</span>` + catsPresent.map(c =>
+    `<button class="chip" data-cat="${c}" style="--cat:${CATS[c].color}" aria-pressed="${shownCats.has(c)}" title="${CATS[c].long}">${CATS[c].label}</button>`
+  ).join("");
+}
+
+function visible() { return results.filter(r => shownCats.has(r.ev.category)); }
+
+function renderTeam() {
+  const rows = visible();
+  const t = totals(rows);
+  const teamOnly = rows.filter(r => r.p.role === "team");
+  const elos = players.filter(p => p.role === "team" && p.elo).map(p => p.elo.elo);
+  const topElo = players.filter(p => p.elo).sort((a, b) => b.elo.elo - a.elo.elo)[0];
+  // Most impressive first, weighting bigger fields (see better()).
+  const hls = rows.filter(r => r.highlight).sort(better);
+  const shownHls = reelOpen ? hls : hls.slice(0, REEL_SIZE);
+
+  const board = players.map(p => {
+    const pr = rows.filter(r => r.player === p.id), pt = totals(pr);
+    return { p, pt };
+  }).sort((a, b) => b.pt.hls - a.pt.hls || (b.pt.w / (b.pt.w + b.pt.l + b.pt.d || 1)) - (a.pt.w / (a.pt.w + a.pt.l + a.pt.d || 1)));
+
+  const evIds = [...new Set(rows.map(r => r.event))].sort((a, b) => events[b].date.localeCompare(events[a].date));
+
+  return `
+  <div class="tiles">
+    ${tile("Events", t.events, `${t.entries} player entries`, "purple")}
+    ${tile("Match record", `${t.w}-${t.l}${t.d ? "-" + t.d : ""}`, `${pct(t.w, t.w + t.l + t.d)} match wins`, "teal")}
+    ${tile("Game win rate", pct(t.gw, t.gw + t.gl), `${t.gw}-${t.gl} in games`)}
+    ${tile("Event wins", t.wins, `${t.top8} highlighted top 8s`, "gold")}
+    ${tile("Top cuts", t.cuts, "made the elimination rounds", "pink")}
+    ${tile("Highlights", t.hls, "strong finishes below")}
+    ${elos.length ? tile("Avg team Elo", Math.round(elos.reduce((a, b) => a + b, 0) / elos.length),
+        topElo ? `top: ${esc(topElo.name)} ${topElo.elo.elo}` : "", "purple") : ""}
+  </div>
+
+  <div class="card"><span class="tag gold">Highlight reel</span>
+    ${hls.length ? `<div class="reel">${shownHls.map(r => highlightCard(r, true)).join("")}</div>
+      ${hls.length > REEL_SIZE ? `<div style="text-align:center;margin-top:16px"><button class="btn" id="reel-toggle">
+        ${reelOpen ? "Show fewer" : `Show all ${hls.length}`}</button></div>` : ""}`
+      : `<div class="empty">No highlighted finishes for the selected event types.</div>`}
+  </div>
+
+  <div class="card"><span class="tag teal">Team leaderboard</span>
+    <p class="section-note">Click a player for their full history.</p>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Player</th><th class="num">Events</th><th class="num">Record</th><th class="num">Win %</th>
+        <th class="num hide-sm">Top cuts</th><th class="num">Highlights</th><th>Best finish</th><th class="num">Elo</th></tr></thead>
+      <tbody>${board.map(({ p, pt }) => `
+        <tr class="click" data-goto="${p.id}">
+          <td><div class="pcell">${avatar(p)}<div><b>${esc(p.name)}</b>${p.role === "management" ? `<div class="small muted">Management</div>` : ""}</div></div></td>
+          <td class="num">${pt.events}</td>
+          <td class="num">${pt.entries ? `${pt.w}-${pt.l}${pt.d ? "-" + pt.d : ""}` : "—"}</td>
+          <td class="num">${pct(pt.w, pt.w + pt.l + pt.d)}</td>
+          <td class="num hide-sm">${pt.cuts}</td>
+          <td class="num">${pt.hls}</td>
+          <td class="best">${pt.best ? `${place(pt.best.highlight) || `<b>${finish(pt.best)}</b>`} ${esc(pt.best.ev.name)}
+            <div class="small muted">${context(pt.best)}</div>` : "—"}</td>
+          <td class="num">${p.elo ? p.elo.elo : "—"}</td>
+        </tr>`).join("")}</tbody>
+    </table></div>
+  </div>
+
+  <div class="card"><span class="tag purple">Events</span>
+    ${evIds.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Date</th><th>Event</th><th>Type</th><th>Team results</th></tr></thead>
+      <tbody>${evIds.map(id => {
+        const ev = events[id];
+        const rs = rows.filter(r => r.event === id).sort((a, b) => (a.rank || 1e9) - (b.rank || 1e9));
+        return `<tr><td class="nowrap">${fmtDate(ev.date)}</td><td>${evCell(ev)}</td><td>${catTag(ev.category)}</td>
+          <td><div class="mini">${rs.map(r => `<span class="${r.highlight ? "lit" : ""}" style="--hl:${r.highlight ? TIER_COLOR[r.highlight.tier] : "transparent"}"
+            title="${esc(r.p.name)}: ${finish(r)}, ${record(r)}">${esc(r.p.name)} <b>${finish(r)}</b></span>`).join("")}</div></td></tr>`;
+      }).join("")}</tbody></table></div>`
+      : `<div class="empty">No events for the selected types.</div>`}
+  </div>`;
+}
+
+const INKS = { Amber: "#f2b72f", Amethyst: "#9b5fc0", Emerald: "#3aa55c", Ruby: "#e0384a", Sapphire: "#2b8fd6", Steel: "#a7b2bf" };
+
+function aboutCard(p) {
+  const cards = p.favorite_cards || [], imgs = p.card_images || [];
+  if (!cards.length && !p.outside) return "";
+  return `<div class="card about"><span class="tag purple">Player card</span>
+    ${imgs.length ? `<div class="fav-imgs">${imgs.map((src, i) =>
+      `<img src="${esc(src)}" alt="${esc(cards[i] || cards[0] || "Favorite card")}" loading="lazy">`).join("")}</div>` : ""}
+    <dl>
+      ${cards.length ? `<dt>Favorite card${cards.length > 1 ? "s" : ""}</dt><dd>${cards.map(esc).join(" & ")}</dd>` : ""}
+      ${p.outside ? `<dt>When not playing Lorcana</dt><dd>${esc(p.outside)}</dd>` : ""}
+    </dl>
+  </div>`;
+}
+
+function renderPlayer(p) {
+  const rows = visible().filter(r => r.player === p.id).sort((a, b) => b.ev.date.localeCompare(a.ev.date));
+  const t = totals(rows);
+  const hls = rows.filter(r => r.highlight).sort(better);
+  const elo = p.elo;
+  const eloLink = `https://elorcana.com/profile/${encodeURIComponent(p.elorcana)}`;
+  return `
+  <div class="profile">
+    ${p.photo ? `<img class="portrait" src="${esc(p.photo)}" alt="${esc(p.title || p.name)}">` : avatar(p)}
+    <div class="intro">
+      <h2>${esc(p.title || p.name)}</h2>
+      ${p.title && p.title.replace(/\W/g, "").toLowerCase() !== p.name.replace(/\W/g, "").toLowerCase()
+        ? `<div class="handle">Plays as ${esc(p.name)}</div>` : ""}
+      <div class="tagline">
+        <span class="badge role ${p.role}">${p.role === "management" ? "Management" : "Team"}</span>
+        <a class="badge" href="${eloLink}" target="_blank" rel="noopener">${elo ? `Elo ${elo.elo} · #${elo.rank.toLocaleString()}` : "eLorcana profile"} ↗</a>
+        ${p.started ? `<span class="badge plain">Since ${esc(p.started)}</span>` : ""}
+        ${(p.inks || []).map(i => `<span class="badge ink" style="--ink:${INKS[i] || "#888"}">${esc(i)}</span>`).join("")}
+      </div>
+      ${p.bio && p.bio.length ? `<ul class="bio">${p.bio.map(b => `<li>${esc(b)}</li>`).join("")}</ul>` : ""}
+    </div>
+  </div>
+  ${aboutCard(p)}
+
+  <div class="tiles" style="margin-top:24px">
+    ${tile("Events", t.events, "", "purple")}
+    ${tile("Match record", t.entries ? `${t.w}-${t.l}${t.d ? "-" + t.d : ""}` : "—", `${pct(t.w, t.w + t.l + t.d)} match wins`, "teal")}
+    ${tile("Game win rate", pct(t.gw, t.gw + t.gl), `${t.gw}-${t.gl} in games`)}
+    ${tile("Top cuts", t.cuts, "", "pink")}
+    ${tile("Best finish", t.best ? (t.best.highlight ? esc(t.best.highlight.label) : finish(t.best)) : "—",
+        t.best ? `${esc(t.best.ev.name)}<br><b>${context(t.best)}</b>` : "", "gold")}
+    ${elo && elo.peak ? tile("Peak Elo", elo.peak, `now ${elo.elo}`, "purple") : ""}
+  </div>
+
+  ${hls.length ? `<div class="card"><span class="tag gold">Best finishes</span>
+    <div class="reel">${hls.map(r => highlightCard(r, false)).join("")}</div></div>` : ""}
+
+  <div class="card"><span class="tag teal">Event history</span>
+    ${rows.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Date</th><th>Event</th><th>Type</th><th class="num">Finish</th><th class="num">Record</th>
+        <th class="num hide-sm">Games</th><th>Top cut</th></tr></thead>
+      <tbody>${rows.map(r => `
+        <tr class="${r.highlight ? "hl-row" : ""}" style="--hl:${r.highlight ? TIER_COLOR[r.highlight.tier] : "transparent"}">
+          <td class="nowrap">${fmtDate(r.ev.date)}</td>
+          <td>${evCell(r.ev)}</td>
+          <td>${catTag(r.ev.category)}</td>
+          <td class="num">${finish(r)}${r.ev.players ? `<span class="small muted"> / ${r.ev.players}</span>` : ""} ${place(r.highlight)}</td>
+          <td class="num">${record(r)}</td>
+          <td class="num hide-sm">${r.games_won}-${r.games_lost}</td>
+          <td class="nowrap">${r.made_top_cut ? `${esc(r.top_cut_record.replace(/-0$/, ""))} <span class="small muted">${/^phase \d+$/i.test(r.last_phase || "") ? "" : esc(r.last_phase)}</span>` : `<span class="muted">—</span>`}</td>
+        </tr>`).join("")}</tbody></table></div>`
+      : `<div class="empty">No results for the selected event types.</div>`}
+  </div>`;
+}
+
+function render() {
+  renderTabs();
+  renderFilters();
+  const p = byId[current];
+  document.getElementById("panel").innerHTML = p ? renderPlayer(p) : renderTeam();
+  document.title = p ? `${p.name} · Rules of Villainy Roster` : "Rules of Villainy Roster";
+}
+
+function go(id) {
+  current = byId[id] ? id : "team";
+  history.replaceState(null, "", current === "team" ? location.pathname + location.search : "#" + current);
+  render();
+  // Bring the selected tab into view by scrolling the tab strip only, not the page.
+  const strip = document.getElementById("tabs"), tab = strip.querySelector(`.tab[data-id="${current}"]`);
+  if (tab) strip.scrollLeft = tab.offsetLeft - strip.offsetLeft - (strip.clientWidth - tab.offsetWidth) / 2;
+}
+
+document.getElementById("tabs").addEventListener("click", e => {
+  const b = e.target.closest(".tab");
+  if (b) go(b.dataset.id);
+});
+document.getElementById("tabs").addEventListener("keydown", e => {
+  if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+  const ids = ["team", ...players.map(p => p.id)];
+  const i = ids.indexOf(current) + (e.key === "ArrowRight" ? 1 : -1);
+  go(ids[(i + ids.length) % ids.length]);
+  document.querySelector(`.tab[data-id="${current}"]`)?.focus({ preventScroll: true });
+});
+document.getElementById("filters").addEventListener("click", e => {
+  const c = e.target.closest(".chip");
+  if (!c) return;
+  const cat = c.dataset.cat;
+  shownCats.has(cat) ? shownCats.delete(cat) : shownCats.add(cat);
+  if (!shownCats.size) shownCats = new Set(catsPresent);
+  render();
+});
+document.getElementById("panel").addEventListener("click", e => {
+  if (e.target.closest("#reel-toggle")) { reelOpen = !reelOpen; render(); return; }
+  const row = e.target.closest("tr[data-goto]");
+  if (row && !e.target.closest("a")) { go(row.dataset.goto); window.scrollTo({ top: 0, behavior: "smooth" }); }
+});
+window.addEventListener("hashchange", () => go(location.hash.slice(1)));
+
+const s = DATA.search;
+document.getElementById("badge").textContent = `Competitive team · updated ${fmtDate(DATA.updated)}`;
+document.getElementById("footer").innerHTML =
+  `Results from <a href="https://tcg.ravensburgerplay.com" target="_blank" rel="noopener">Ravensburger Play Hub</a>
+   (events since ${fmtDate(s.since)}): every DLC, LCQ and continental championship, CCQs with ${s.min_players}+ players,
+   and set championships (any size) and other events with ${s.min_players}+ players within ${s.radius_miles} miles of ${esc(s.name)}.
+   Elo from <a href="https://elorcana.com" target="_blank" rel="noopener">eLorcana</a>.<br>
+   Styled after <a href="https://loredle.villainy.ink" target="_blank" rel="noopener">Loredle</a>. Not affiliated with Ravensburger or Disney.`;
+
+go(location.hash.slice(1));
+</script>
+</body>
+</html>
