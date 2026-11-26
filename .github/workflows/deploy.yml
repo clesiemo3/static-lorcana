@@ -1,9 +1,9 @@
 name: Deploy site
 
-# Copies each page in tools/ into _site/, generates data-driven tools (the For
-# Sale page), builds the index from the pages' titles and descriptions, and
-# publishes _site/ to GitHub Pages. The daily run refreshes For Sale prices;
-# tcgcsv.com updates around 20:00 UTC.
+# Copies each page in tools/ into _site/, generates data-driven tools (the
+# events calendar and For Sale pages), builds the index from the pages' titles
+# and descriptions, and publishes _site/ to GitHub Pages. The daily run
+# refreshes For Sale prices; tcgcsv.com updates around 20:00 UTC.
 
 on:
   push:
@@ -22,16 +22,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Upload and deploy run as separate jobs, as in GitHub's Pages starter
+  # workflow: the deploy job only starts once the upload has fully finished.
+  # In one job, the deploy step sometimes couldn't find the artifact yet.
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: python3 scripts/build.py
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - run: python3 scripts/build.py
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: _site
       - id: deploy
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
